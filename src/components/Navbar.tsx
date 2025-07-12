@@ -2,53 +2,70 @@
 
 import { useSession, signIn, signOut } from "next-auth/react";
 import Link from "next/link";
+import { ThemeToggle } from "./ThemeToggle";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
+  const router = useRouter();
 
   return (
-    <nav className="bg-white shadow-sm border-b">
+    <nav className="bg-card/50 backdrop-blur-sm border-b border-border shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="text-xl font-bold text-gray-900">
-              WeightTracker
+            <Link href="/" className="text-lg sm:text-xl font-bold text-foreground hover:text-primary transition-colors">
+              MiProgreso
             </Link>
           </div>
 
           {/* Navigation buttons */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            <ThemeToggle />
             {status === "loading" ? (
-              <div className="animate-pulse bg-gray-200 h-8 w-20 rounded"></div>
+              <div className="animate-pulse bg-muted h-8 w-16 sm:w-20 rounded-md"></div>
             ) : session ? (
-              <div className="flex items-center space-x-4">
-                <Link
-                  href="/dashboard"
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+              <div className="flex items-center space-x-2 sm:space-x-4">
+                <button
+                  onClick={() => router.push("/dashboard")}
+                  className="font-semibold text-foreground hover:text-primary transition-colors rounded-md px-2 sm:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm sm:text-base"
                 >
-                  Dashboard
-                </Link>
+                  Inicio
+                </button>
+                <button
+                  onClick={() => router.push("/seguimiento")}
+                  className="font-semibold text-foreground hover:text-primary transition-colors rounded-md px-2 sm:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm sm:text-base"
+                >
+                  Seguimiento
+                </button>
+                <button
+                  onClick={() => router.push("/perfil")}
+                  className="font-semibold text-foreground hover:text-primary transition-colors rounded-md px-2 sm:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm sm:text-base truncate max-w-24 sm:max-w-none"
+                  title="Editar perfil"
+                >
+                  {session.user?.name}
+                </button>
                 <button
                   onClick={() => signOut()}
-                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="bg-destructive hover:bg-destructive/90 text-destructive-foreground px-2 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors shadow-sm"
                 >
-                  Cerrar sesión
+                  Salir
                 </button>
               </div>
             ) : (
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 sm:space-x-4">
                 <button
                   onClick={() => signIn("google")}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-2 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors shadow-sm"
                 >
-                  Iniciar sesión
+                  Entrar
                 </button>
                 <button
                   onClick={() => signIn("google")}
-                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="bg-accent hover:bg-accent/90 text-accent-foreground px-2 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors shadow-sm"
                 >
-                  Registrarse
+                  Registro
                 </button>
               </div>
             )}

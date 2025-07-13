@@ -5,9 +5,6 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import { useTheme } from "@/context/ThemeContext";
-import FisicoIcon from "public/fisico.png";
-import PrefIcon from "public/pref.png";
-import TrofeoIcon from "public/trofeo.svg";
 import 'spinner-zilla/dist/index.css';
 import { HeartbeatSpinner } from 'spinner-zilla';
 import { motion } from 'framer-motion';
@@ -53,13 +50,9 @@ export default function PerfilPage() {
   const router = useRouter();
   const [form, setForm] = useState(initialState);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [goalWeight, setGoalWeight] = useState(70);
   const [loading, setLoading] = useState(true);
-  const { theme } = useTheme();
-
-  // Estado para loading y fade-in de meta
   const [showLoading, setShowLoading] = useState(false);
   const [showGoal, setShowGoal] = useState(false);
 
@@ -74,7 +67,6 @@ export default function PerfilPage() {
     { key: 'goal', label: 'Meta' },
   ];
   const completedFields = requiredFields.filter(f => String(form[f.key]).trim() !== '');
-  const progress = Math.round((completedFields.length / requiredFields.length) * 100);
 
   // Mostrar loading y meta con efecto
   useEffect(() => {
@@ -205,7 +197,6 @@ export default function PerfilPage() {
     const validation = validate();
     setErrors(validation);
     if (Object.keys(validation).length > 0) return;
-    setSubmitting(true);
     try {
       let profileImageToSend = form.profileImage;
       if (form.profileImage && typeof form.profileImage !== "string") {
@@ -245,7 +236,7 @@ export default function PerfilPage() {
       setSuccess(false);
       setErrors({ submit: "Error de conexión. Intenta de nuevo." });
     } finally {
-      setSubmitting(false);
+      // setSubmitting(false); // Removed as per edit hint
     }
   };
 
@@ -285,20 +276,6 @@ export default function PerfilPage() {
   const pesoDeseado = Number(goalWeight);
   const diferenciaKg = pesoActual && pesoDeseado ? pesoActual - pesoDeseado : 0;
   const porcentajeMeta = pesoActual ? (diferenciaKg / pesoActual) * 100 : 0;
-  let mensaje = "";
-  if (pesoActual && pesoDeseado) {
-    if (porcentajeMeta >= 25) {
-      mensaje = "¡Gran transformación por delante ��!";
-    } else if (porcentajeMeta >= 15) {
-      mensaje = "Meta desafiante 💪";
-    } else if (porcentajeMeta >= 7) {
-      mensaje = "Meta saludable y alcanzable 💚";
-    } else if (porcentajeMeta >= 3) {
-      mensaje = "Pequeño ajuste para sentirte mejor ✨";
-    } else {
-      mensaje = "Mantener tu bienestar también es un objetivo 🧘";
-    }
-  }
 
   return (
     <div className="min-h-screen bg-background">

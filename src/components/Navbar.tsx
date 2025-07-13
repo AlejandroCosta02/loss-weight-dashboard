@@ -4,13 +4,11 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
 import { useRouter } from "next/navigation";
-import { useTheme } from "../context/ThemeContext";
 import Image from "next/image";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { theme } = useTheme();
 
   return (
     <nav className="bg-card/50 backdrop-blur-sm border-b border-border shadow-sm z-50">

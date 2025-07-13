@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import Image from "next/image";
 
 const initialState = {
-  profileImage: "",
+  profileImage: "" as string | File,
   weight: "",
   height: "",
   age: "",
@@ -96,8 +96,12 @@ export default function PerfilPage() {
     return newErrors;
   };
 
-  const handleChange = (e: any) => {
-    const { name, value, files } = e.target;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    let files: FileList | null = null;
+    if (e.target instanceof HTMLInputElement) {
+      files = e.target.files;
+    }
     if (name === "profileImage" && files && files[0]) {
       const file = files[0];
       if (file.size > 2 * 1024 * 1024) {
@@ -112,7 +116,7 @@ export default function PerfilPage() {
     }
   };
 
-  const handleSlider = (e: any) => {
+  const handleSlider = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGoalWeight(Number(e.target.value));
     setForm((prev) => ({ ...prev, goal: e.target.value }));
     setErrors((prev: any) => ({ ...prev, goal: undefined }));
@@ -125,7 +129,7 @@ export default function PerfilPage() {
     return (parts[0][0] + (parts[1][0] || "")).toUpperCase();
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const validation = validate();
     setErrors(validation);

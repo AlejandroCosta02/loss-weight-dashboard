@@ -15,7 +15,7 @@ import { useTheme } from "@/context/ThemeContext";
 type ActiveTab = 'progress' | 'meals' | 'workout' | 'water';
 
 function Sidebar({ activeTab, onTabChange }: { activeTab: ActiveTab; onTabChange: (tab: ActiveTab) => void }) {
-  const { theme } = useTheme();
+  useTheme();
   const sidebarRef = useRef<HTMLDivElement>(null);
   useFloating({
     placement: 'left-start' as Placement,
@@ -120,7 +120,7 @@ export default function Dashboard() {
             setShowModal(true);
             modalShownRef.current = true;
           }
-        } catch (e) {
+        } catch {
           setShowModal(true); // fallback: mostrar modal si hay error
           modalShownRef.current = true;
         } finally {

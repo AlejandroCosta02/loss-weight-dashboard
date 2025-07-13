@@ -4,7 +4,6 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
-import { useTheme } from "@/context/ThemeContext";
 import 'spinner-zilla/dist/index.css';
 import { HeartbeatSpinner } from 'spinner-zilla';
 import { motion } from 'framer-motion';
@@ -275,7 +274,6 @@ export default function PerfilPage() {
   const pesoActual = Number(form.weight);
   const pesoDeseado = Number(goalWeight);
   const diferenciaKg = pesoActual && pesoDeseado ? pesoActual - pesoDeseado : 0;
-  const porcentajeMeta = pesoActual ? (diferenciaKg / pesoActual) * 100 : 0;
 
   return (
     <div className="min-h-screen bg-background">

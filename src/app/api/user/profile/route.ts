@@ -115,7 +115,7 @@ export async function PUT(req: NextRequest) {
   }
 
   return NextResponse.json({ success: true, userData: updatedUserData });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 } 

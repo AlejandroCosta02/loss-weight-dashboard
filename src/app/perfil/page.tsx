@@ -62,7 +62,7 @@ export default function PerfilPage() {
           // Ensure form.goal is also set
           setForm(prev => ({ ...prev, goal: data.goal ? String(data.goal) : "70" }));
         }
-      } catch (e) {
+      } catch {
         // ignore
       } finally {
         setLoading(false);
@@ -180,7 +180,7 @@ export default function PerfilPage() {
         setSuccess(false);
         setErrors({ submit: "Error al guardar el perfil. Intenta de nuevo." });
       }
-    } catch (err: unknown) {
+    } catch {
       setSuccess(false);
       setErrors({ submit: "Error de conexión. Intenta de nuevo." });
     } finally {

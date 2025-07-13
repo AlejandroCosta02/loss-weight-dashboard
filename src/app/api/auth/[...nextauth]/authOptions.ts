@@ -48,7 +48,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token }) {
       return token;
     },
-    async redirect({ url, baseUrl }) {
+    async redirect() {
       // Siempre redirigir a /dashboard tras login
       return "/dashboard";
     },

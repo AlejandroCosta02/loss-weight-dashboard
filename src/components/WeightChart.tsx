@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Customized, ReferenceDot, TooltipProps
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Customized, ReferenceDot
 } from 'recharts';
 import { format, subDays, subMonths, startOfDay } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -22,7 +22,13 @@ interface WeightChartProps {
 
 type TimeFilter = '15d' | '1m' | '3m' | '6m' | 'all';
 
-function TrophySVG(props: any) {
+interface TrophySVGProps {
+  x?: number;
+  y?: number;
+  [key: string]: unknown;
+}
+
+function TrophySVG(props: TrophySVGProps) {
   // Renderiza el SVG del trofeo centrado
   return (
     <g {...props}>
@@ -110,7 +116,13 @@ export default function WeightChart({ data, goalWeight, currentWeight }: WeightC
   };
 
   // Custom trofeo en el objetivo (al final del eje X, siempre visible)
-  const TrophyMarker = (props: any) => {
+  interface TrophyMarkerProps {
+    yAxisMap?: Record<string, { scale: (value: number) => number }>;
+    width?: number;
+    height?: number;
+  }
+
+  const TrophyMarker = (props: TrophyMarkerProps) => {
     const { yAxisMap, width, height } = props;
     if (!yAxisMap) return null;
     const yAxis = yAxisMap[Object.keys(yAxisMap)[0]];

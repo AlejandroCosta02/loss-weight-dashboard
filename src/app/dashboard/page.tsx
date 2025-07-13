@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import WelcomeModal from "@/components/WelcomeModal";
 import DashboardContent from "@/components/DashboardContent";
@@ -58,9 +59,11 @@ function Sidebar({ activeTab, onTabChange }: { activeTab: ActiveTab; onTabChange
               }`}
               title={item.label}
             >
-              <img 
+              <Image 
                 src={item.icon} 
                 alt={item.label} 
+                width={24}
+                height={24}
                 className="w-6 h-6"
               />
             </button>
@@ -80,9 +83,11 @@ function Sidebar({ activeTab, onTabChange }: { activeTab: ActiveTab; onTabChange
             }`}
             title={item.label}
           >
-            <img 
+            <Image 
               src={item.icon} 
               alt={item.label} 
+              width={28}
+              height={28}
               className="w-7 h-7"
             />
             <span className="text-xs transition-colors">{item.label}</span>

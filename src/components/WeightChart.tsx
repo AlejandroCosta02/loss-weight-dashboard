@@ -84,24 +84,27 @@ export default function WeightChart({ data, goalWeight, currentWeight }: WeightC
   const maxWeight = weights.length > 0 ? Math.max(...weights, goalWeight) : goalWeight;
   const padding = (maxWeight - minWeight) * 0.1;
 
-  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: any[] }) => {
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: unknown[] }) => {
     if (active && payload && Array.isArray(payload) && payload.length) {
-      const dataPoint = payload[0].payload as { date: string; weight: number };
-      return (
-        <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
-          <div className="font-semibold text-foreground">
-            {format(new Date(dataPoint.date), "EEEE, d 'de' MMMM", { locale: undefined })}
+      const first = payload[0];
+      if (typeof first === 'object' && first !== null && 'payload' in first) {
+        const dataPoint = (first as { payload: { date: string; weight: number } }).payload;
+        return (
+          <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
+            <div className="font-semibold text-foreground">
+              {format(new Date(dataPoint.date), "EEEE, d 'de' MMMM", { locale: undefined })}
+            </div>
+            <div className="text-primary font-bold text-lg">
+              {dataPoint.weight} kg
+            </div>
+            {goalWeight > 0 && (
+              <p className="text-muted-foreground text-sm mt-1">
+                Diferencia con objetivo: {(dataPoint.weight - goalWeight).toFixed(1)} kg
+              </p>
+            )}
           </div>
-          <div className="text-primary font-bold text-lg">
-            {dataPoint.weight} kg
-          </div>
-          {goalWeight > 0 && (
-            <p className="text-muted-foreground text-sm mt-1">
-              Diferencia con objetivo: {(dataPoint.weight - goalWeight).toFixed(1)} kg
-            </p>
-          )}
-        </div>
-      );
+        );
+      }
     }
     return null;
   };

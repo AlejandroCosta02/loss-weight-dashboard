@@ -22,7 +22,7 @@ export async function GET() {
   return NextResponse.json({ onboardingCompleted: user.userData.onboardingCompleted });
 }
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   const session = await getServerSession(authOptions);
   if (!session || !session.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

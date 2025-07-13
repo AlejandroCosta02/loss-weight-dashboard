@@ -16,10 +16,8 @@ type ActiveTab = 'progress' | 'meals' | 'workout' | 'water';
 
 function Sidebar({ activeTab, onTabChange }: { activeTab: ActiveTab; onTabChange: (tab: ActiveTab) => void }) {
   const { theme } = useTheme();
-  console.log("Sidebar theme:", theme);
-  const [open, setOpen] = useState(true);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const { x, y, strategy } = useFloating({
+  useFloating({
     placement: 'left-start' as Placement,
     middleware: [offset(0), shift()],
     strategy: 'fixed',
@@ -49,7 +47,7 @@ function Sidebar({ activeTab, onTabChange }: { activeTab: ActiveTab; onTabChange
       {/* Desktop sidebar - new design */}
       <div className="hidden md:flex fixed left-4 top-1/2 h-[80vh] w-20 bg-card shadow-xl rounded-2xl flex-col items-center py-4 -translate-y-1/2">
         <div className="flex flex-col flex-1 justify-between w-full items-center">
-          {items.map((item, i) => (
+          {items.map((item) => (
             <button
               key={item.label}
               onClick={() => onTabChange(item.tab)}

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Modal } from "react-responsive-modal";
 import "react-responsive-modal/styles.css";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
 
 interface WeightEntryFormProps {
   onClose: () => void;

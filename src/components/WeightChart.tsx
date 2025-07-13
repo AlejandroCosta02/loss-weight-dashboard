@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Customized, ReferenceDot
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Customized, ReferenceDot, TooltipProps
 } from 'recharts';
 import { format, subDays, subMonths, startOfDay } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -84,18 +84,20 @@ export default function WeightChart({ data, goalWeight, currentWeight }: WeightC
   const maxWeight = weights.length > 0 ? Math.max(...weights, goalWeight) : goalWeight;
   const padding = (maxWeight - minWeight) * 0.1;
 
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const dataPoint = payload[0].payload;
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: any[] }) => {
+    if (active && payload && Array.isArray(payload) && payload.length) {
+      const dataPoint = payload[0].payload as { date: string; weight: number };
       return (
         <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
-          <p className="font-medium text-foreground">{dataPoint.fullDate}</p>
-          <p className="text-primary font-bold text-lg">
-            {payload[0].value} kg
-          </p>
+          <div className="font-semibold text-foreground">
+            {format(new Date(dataPoint.date), "EEEE, d 'de' MMMM", { locale: undefined })}
+          </div>
+          <div className="text-primary font-bold text-lg">
+            {dataPoint.weight} kg
+          </div>
           {goalWeight > 0 && (
             <p className="text-muted-foreground text-sm mt-1">
-              Diferencia con objetivo: {(payload[0].value - goalWeight).toFixed(1)} kg
+              Diferencia con objetivo: {(dataPoint.weight - goalWeight).toFixed(1)} kg
             </p>
           )}
         </div>
@@ -111,7 +113,7 @@ export default function WeightChart({ data, goalWeight, currentWeight }: WeightC
     const yAxis = yAxisMap[Object.keys(yAxisMap)[0]];
     const y = yAxis.scale(goalWeight);
     // Si no hay width, fallback al centro
-    let x = width ? Math.min(width - 32, width - 1) : 150;
+    const x = width ? Math.min(width - 32, width - 1) : 150;
     // Si y es NaN, fallback al centro vertical
     const yPos = isNaN(y) ? (height ? height / 2 : 60) : y;
     return <TrophySVG x={x} y={yPos} />;

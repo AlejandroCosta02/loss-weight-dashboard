@@ -271,8 +271,6 @@ export default function PerfilPage() {
   const estimatedDate = estimateGoalDate();
 
   // Mensaje motivador dinámico
-  const pesoActual = Number(form.weight);
-  const pesoDeseado = Number(goalWeight);
 
   return (
     <div className="min-h-screen bg-background">

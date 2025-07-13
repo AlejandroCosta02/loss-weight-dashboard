@@ -5,6 +5,95 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import WelcomeModal from "@/components/WelcomeModal";
+import DashboardContent from "@/components/DashboardContent";
+import MealsContent from "@/components/MealsContent";
+import WorkoutContent from "@/components/WorkoutContent";
+import WaterContent from "@/components/WaterContent";
+import { useFloating, offset, shift, Placement } from '@floating-ui/react';
+import { useTheme } from "@/context/ThemeContext";
+
+type ActiveTab = 'progress' | 'meals' | 'workout' | 'water';
+
+function Sidebar({ activeTab, onTabChange }: { activeTab: ActiveTab; onTabChange: (tab: ActiveTab) => void }) {
+  const { theme } = useTheme();
+  console.log("Sidebar theme:", theme);
+  const [open, setOpen] = useState(true);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const { x, y, strategy } = useFloating({
+    placement: 'left-start' as Placement,
+    middleware: [offset(0), shift()],
+    strategy: 'fixed',
+  });
+
+  // Animación de aparición
+  useEffect(() => {
+    if (sidebarRef.current) {
+      sidebarRef.current.classList.add('opacity-0', 'translate-x-[-20px]');
+      setTimeout(() => {
+        sidebarRef.current?.classList.remove('opacity-0', 'translate-x-[-20px]');
+        sidebarRef.current?.classList.add('opacity-100', 'translate-x-0');
+      }, 10);
+    }
+  }, []);
+
+  // Íconos y rutas
+  const items = [
+    { icon: activeTab === 'progress' ? '/chart-active.png' : '/chart.png', label: 'Progreso', tab: 'progress' as ActiveTab },
+    { icon: activeTab === 'meals' ? '/food-active.png' : '/food.png', label: 'Comidas', tab: 'meals' as ActiveTab },
+    { icon: activeTab === 'workout' ? '/workout-active.png' : '/workout.png', label: 'Entrenamiento', tab: 'workout' as ActiveTab },
+    { icon: activeTab === 'water' ? '/water-active.png' : '/water.png', label: 'Agua', tab: 'water' as ActiveTab },
+  ];
+
+  return (
+    <>
+      {/* Desktop sidebar - new design */}
+      <div className="hidden md:flex fixed left-4 top-1/2 h-[80vh] w-20 bg-card shadow-xl rounded-2xl flex-col items-center py-4 -translate-y-1/2">
+        <div className="flex flex-col flex-1 justify-between w-full items-center">
+          {items.map((item, i) => (
+            <button
+              key={item.label}
+              onClick={() => onTabChange(item.tab)}
+              className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 ${
+                activeTab === item.tab 
+                  ? 'bg-primary/10 shadow-md text-primary scale-110' 
+                  : 'text-muted-foreground hover:bg-primary/5 hover:scale-105'
+              }`}
+              title={item.label}
+            >
+              <img 
+                src={item.icon} 
+                alt={item.label} 
+                className="w-6 h-6"
+              />
+            </button>
+          ))}
+        </div>
+      </div>
+      {/* Mobile bottom nav */}
+      <div className="fixed md:hidden bottom-0 left-0 w-full z-40 flex justify-around bg-card shadow-xl py-2 transition-all duration-300">
+        {items.map((item) => (
+          <button
+            key={item.label}
+            onClick={() => onTabChange(item.tab)}
+            className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all duration-300 ${
+              activeTab === item.tab
+                ? 'bg-primary/10 text-primary'
+                : 'text-muted-foreground hover:bg-primary/5'
+            }`}
+            title={item.label}
+          >
+            <img 
+              src={item.icon} 
+              alt={item.label} 
+              className="w-7 h-7"
+            />
+            <span className="text-xs transition-colors">{item.label}</span>
+          </button>
+        ))}
+      </div>
+    </>
+  );
+}
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -12,6 +101,7 @@ export default function Dashboard() {
   const [showModal, setShowModal] = useState(false);
   const [onboardingChecked, setOnboardingChecked] = useState(false);
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
+  const [activeTab, setActiveTab] = useState<ActiveTab>('progress');
   const modalShownRef = useRef(false);
 
   useEffect(() => {
@@ -53,6 +143,21 @@ export default function Dashboard() {
     modalShownRef.current = true;
   };
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'progress':
+        return <DashboardContent />;
+      case 'meals':
+        return <MealsContent />;
+      case 'workout':
+        return <WorkoutContent />;
+      case 'water':
+        return <WaterContent />;
+      default:
+        return <DashboardContent />;
+    }
+  };
+
   if (status === "loading") {
     return (
       <div className="min-h-screen bg-background">
@@ -74,71 +179,13 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
+      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
       {/* Solo mostrar el modal si onboardingCompleted es false */}
       {onboardingCompleted === false && (
         <WelcomeModal show={showModal} onClose={handleCloseModal} />
       )}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
-        <div className="text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold text-foreground sm:text-5xl md:text-6xl">
-            ¡Hola, {session.user?.name || "Usuario"}!
-          </h1>
-          <p className="mt-3 max-w-md mx-auto text-sm sm:text-base text-muted-foreground sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-            Bienvenido a tu dashboard personal de seguimiento de peso.
-          </p>
-        </div>
-
-        <div className="mt-8 sm:mt-12">
-          <div className="bg-card shadow-lg rounded-lg p-4 sm:p-6 border border-border">
-            <h2 className="text-xl sm:text-2xl font-semibold text-foreground mb-4">
-              Tu información
-            </h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Nombre</p>
-                <p className="text-base sm:text-lg text-foreground">{session.user?.name}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Email</p>
-                <p className="text-base sm:text-lg text-foreground break-all">{session.user?.email}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6 sm:mt-8">
-          <div className="bg-card shadow-lg rounded-lg p-4 sm:p-6 border border-border">
-            <h2 className="text-xl sm:text-2xl font-semibold text-foreground mb-4">
-              Funcionalidades disponibles
-            </h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <div className="border border-border rounded-lg p-4 bg-background/50">
-                <h3 className="font-medium text-foreground text-sm sm:text-base">Seguimiento de peso</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                  Registra tu peso diario y visualiza tu progreso
-                </p>
-                <button
-                  onClick={() => router.push("/seguimiento")}
-                  className="mt-3 bg-primary hover:bg-primary/90 text-primary-foreground px-3 py-1 rounded-full text-xs font-medium transition-colors"
-                >
-                  Ir al seguimiento
-                </button>
-              </div>
-              <div className="border border-border rounded-lg p-4 bg-background/50">
-                <h3 className="font-medium text-foreground text-sm sm:text-base">Gráficos interactivos</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                  Visualiza tu progreso con gráficos motivadores
-                </p>
-              </div>
-              <div className="border border-border rounded-lg p-4 bg-background/50">
-                <h3 className="font-medium text-foreground text-sm sm:text-base">Metas personalizadas</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                  Establece y alcanza tus objetivos de peso
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        {renderContent()}
       </main>
     </div>
   );

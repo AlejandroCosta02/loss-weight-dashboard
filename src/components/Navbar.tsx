@@ -10,7 +10,7 @@ export default function Navbar() {
   const router = useRouter();
 
   return (
-    <nav className="bg-card/50 backdrop-blur-sm border-b border-border shadow-sm">
+    <nav className="bg-card/50 backdrop-blur-sm border-b border-border shadow-sm z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -31,13 +31,7 @@ export default function Navbar() {
                   onClick={() => router.push("/dashboard")}
                   className="font-semibold text-foreground hover:text-primary transition-colors rounded-md px-2 sm:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm sm:text-base"
                 >
-                  Inicio
-                </button>
-                <button
-                  onClick={() => router.push("/seguimiento")}
-                  className="font-semibold text-foreground hover:text-primary transition-colors rounded-md px-2 sm:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm sm:text-base"
-                >
-                  Seguimiento
+                  Dashboard
                 </button>
                 <button
                   onClick={() => router.push("/perfil")}

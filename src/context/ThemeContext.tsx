@@ -3,7 +3,16 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 
 export type ThemeName = "aurora" | "oasis" | "sunset" | "midnight";
 
-export const themes: Record<ThemeName, any> = {
+type ThemeConfig = {
+  name: string;
+  bg: string;
+  form: string;
+  button: string;
+  accent: string;
+  label: string;
+};
+
+export const themes: Record<ThemeName, ThemeConfig> = {
   aurora: {
     name: "Aurora",
     bg: "bg-gradient-to-br from-blue-100 via-pink-100 to-yellow-100",

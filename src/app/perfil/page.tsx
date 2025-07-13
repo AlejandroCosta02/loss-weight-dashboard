@@ -25,7 +25,7 @@ export default function PerfilPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [form, setForm] = useState(initialState);
-  const [errors, setErrors] = useState<any>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [goalWeight, setGoalWeight] = useState(70);
@@ -36,7 +36,17 @@ export default function PerfilPage() {
       try {
         const res = await fetch("/api/user/profile");
         if (res.ok) {
-          const data = await res.json();
+          const data: {
+            profileImage: string;
+            weight: number;
+            height: number;
+            age: number;
+            gender: string;
+            activityLevel: string;
+            dietType: string;
+            preferences: string;
+            goal: number;
+          } = await res.json();
           setForm({
             profileImage: data.profileImage || "",
             weight: data.weight ? String(data.weight) : "",
@@ -81,7 +91,7 @@ export default function PerfilPage() {
   }
 
   const validate = () => {
-    const newErrors: any = {};
+    const newErrors: Record<string, string> = {};
     // Profile image is optional if user already has one or if they're uploading a new one
     if (!form.profileImage && !session?.user?.image) {
       newErrors.profileImage = "La imagen es obligatoria.";
@@ -105,21 +115,21 @@ export default function PerfilPage() {
     if (name === "profileImage" && files && files[0]) {
       const file = files[0];
       if (file.size > 2 * 1024 * 1024) {
-        setErrors((prev: any) => ({ ...prev, profileImage: "La imagen debe ser menor a 2MB." }));
+        setErrors((prev) => ({ ...prev, profileImage: "La imagen debe ser menor a 2MB." }));
         return;
       }
       setForm((prev) => ({ ...prev, profileImage: file }));
-      setErrors((prev: any) => ({ ...prev, profileImage: undefined }));
+      setErrors((prev) => { const copy = { ...prev }; delete copy.profileImage; return copy; });
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
-      setErrors((prev: any) => ({ ...prev, [name]: undefined }));
+      setErrors((prev) => { const copy = { ...prev }; delete copy[name]; return copy; });
     }
   };
 
   const handleSlider = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGoalWeight(Number(e.target.value));
     setForm((prev) => ({ ...prev, goal: e.target.value }));
-    setErrors((prev: any) => ({ ...prev, goal: undefined }));
+    setErrors((prev) => { const copy = { ...prev }; delete copy.goal; return copy; });
   };
 
   const getInitials = (name: string | null | undefined) => {
@@ -170,7 +180,7 @@ export default function PerfilPage() {
         setSuccess(false);
         setErrors({ submit: "Error al guardar el perfil. Intenta de nuevo." });
       }
-    } catch (err) {
+    } catch (err: unknown) {
       setSuccess(false);
       setErrors({ submit: "Error de conexión. Intenta de nuevo." });
     } finally {

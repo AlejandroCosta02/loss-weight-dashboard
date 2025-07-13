@@ -53,8 +53,12 @@ export default function WeightEntryForm({ onClose, onWeightAdded, currentWeight,
         const errorData = await res.json();
         setError(errorData.error || "Error al guardar el peso");
       }
-    } catch (err) {
-      setError("Error de conexión. Intenta de nuevo.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError("Error de conexión. Intenta de nuevo.");
+      } else {
+        setError("Error desconocido. Intenta de nuevo.");
+      }
     } finally {
       setSubmitting(false);
     }

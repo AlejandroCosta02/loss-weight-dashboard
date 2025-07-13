@@ -4,10 +4,13 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
 import { useRouter } from "next/navigation";
+import { useTheme } from "../context/ThemeContext";
+import Image from "next/image";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { theme } = useTheme();
 
   return (
     <nav className="bg-card/50 backdrop-blur-sm border-b border-border shadow-sm z-50">
@@ -31,14 +34,20 @@ export default function Navbar() {
                   onClick={() => router.push("/dashboard")}
                   className="font-semibold text-foreground hover:text-primary transition-colors rounded-md px-2 sm:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm sm:text-base"
                 >
-                  Dashboard
+                  Inicio
                 </button>
                 <button
                   onClick={() => router.push("/perfil")}
-                  className="font-semibold text-foreground hover:text-primary transition-colors rounded-md px-2 sm:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm sm:text-base truncate max-w-24 sm:max-w-none"
-                  title="Editar perfil"
+                  className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  title="Perfil"
                 >
-                  {session.user?.name}
+                  <Image
+                    src={'/user.png'}
+                    alt="Perfil"
+                    width={32}
+                    height={32}
+                    className="w-8 h-8 object-cover"
+                  />
                 </button>
                 <button
                   onClick={() => signOut()}

@@ -46,7 +46,7 @@ function Sidebar({ activeTab, onTabChange }: { activeTab: ActiveTab; onTabChange
   return (
     <>
       {/* Desktop sidebar - new design */}
-      <div className="hidden md:flex fixed left-4 top-1/2 h-[80vh] w-20 bg-card shadow-xl rounded-2xl flex-col items-center py-4 -translate-y-1/2">
+      <div className="hidden lg:flex fixed left-4 top-1/2 h-[80vh] w-20 bg-card shadow-xl rounded-2xl flex-col items-center py-4 -translate-y-1/2">
         <div className="flex flex-col flex-1 justify-between w-full items-center">
           {items.map((item) => (
             <button
@@ -71,7 +71,7 @@ function Sidebar({ activeTab, onTabChange }: { activeTab: ActiveTab; onTabChange
         </div>
       </div>
       {/* Mobile bottom nav */}
-      <div className="fixed md:hidden bottom-0 left-0 w-full z-40 flex justify-around bg-card shadow-xl py-2 transition-all duration-300">
+      <div className="fixed lg:hidden bottom-0 left-0 w-full z-40 flex justify-around bg-card shadow-xl py-2 transition-all duration-300">
         {items.map((item) => (
           <button
             key={item.label}
@@ -187,9 +187,11 @@ export default function Dashboard() {
       {onboardingCompleted === false && (
         <WelcomeModal show={showModal} onClose={handleCloseModal} />
       )}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
-        {renderContent()}
-      </main>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 lg:pl-20">
+        <main className="py-6 sm:py-12">
+          {renderContent()}
+        </main>
+      </div>
     </div>
   );
 } 

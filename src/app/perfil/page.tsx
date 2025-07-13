@@ -273,7 +273,6 @@ export default function PerfilPage() {
   // Mensaje motivador dinámico
   const pesoActual = Number(form.weight);
   const pesoDeseado = Number(goalWeight);
-  const diferenciaKg = pesoActual && pesoDeseado ? pesoActual - pesoDeseado : 0;
 
   return (
     <div className="min-h-screen bg-background">

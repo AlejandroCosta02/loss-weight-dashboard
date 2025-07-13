@@ -6,7 +6,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-export default function Navbar() {
+export default function Navbar({ onProfileClick }: { onProfileClick?: () => void }) {
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -30,12 +30,19 @@ export default function Navbar() {
               <div className="flex items-center space-x-2 sm:space-x-4">
                 <button
                   onClick={() => router.push("/dashboard")}
-                  className="font-semibold text-foreground hover:text-primary transition-colors rounded-md px-2 sm:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm sm:text-base"
+                  className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  title="Inicio"
                 >
-                  Inicio
+                  <Image
+                    src={'/home.png'}
+                    alt="Inicio"
+                    width={32}
+                    height={32}
+                    className="w-8 h-8 object-cover"
+                  />
                 </button>
                 <button
-                  onClick={() => router.push("/perfil")}
+                  onClick={onProfileClick}
                   className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50"
                   title="Perfil"
                 >

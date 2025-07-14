@@ -120,7 +120,13 @@ export default function SidebarShell({ onProfileClick }: { onProfileClick?: () =
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
           >
-            <ContentComponent onProfileClick={onProfileClick} />
+            {activeTab === 'progress' ? (
+              <div className="bg-card rounded-lg p-12 border border-border shadow-sm text-center w-full max-w-6xl mx-auto">
+                <DashboardContent onProfileClick={onProfileClick} />
+              </div>
+            ) : (
+              <ContentComponent onProfileClick={onProfileClick} />
+            )}
           </motion.div>
         </AnimatePresence>
       </div>

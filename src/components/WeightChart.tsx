@@ -161,7 +161,7 @@ export default function WeightChart({ data, goalWeight, currentWeight }: WeightC
           </button>
         ))}
       </div>
-      <div className="h-80">
+      <div className="h-80 w-full">
         <ResponsiveContainer width="100%" height="100%" key={theme}>
           <LineChart data={chartData} margin={{ top: 20, right: 50, left: 20, bottom: 40 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />

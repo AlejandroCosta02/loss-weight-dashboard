@@ -97,24 +97,33 @@ export default function DashboardContent({ onProfileClick }: { onProfileClick?: 
   const weightEntries = userData.dailyWeights || [];
 
   return (
-    <div className={`transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+    <div className={`transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'} w-full mx-auto`}>
 
+      {/* Main Title and Subtitle */}
+      <div className="text-center mb-8">
+        <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+          Mi Progreso
+        </h1>
+        <p className="text-muted-foreground text-lg">
+          Lleva un control de tu evolución y tus registros de peso
+        </p>
+      </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-card rounded-lg p-6 border border-border shadow-sm">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 w-full">
+        <div className="p-6">
           <h3 className="text-sm font-medium text-muted-foreground mb-2">Peso Actual</h3>
           <p className="text-2xl font-bold text-primary">{currentWeight} kg</p>
         </div>
-        <div className="bg-card rounded-lg p-6 border border-border shadow-sm">
+        <div className="p-6">
           <h3 className="text-sm font-medium text-muted-foreground mb-2">Peso Objetivo</h3>
           <p className="text-2xl font-bold" style={{ color: 'var(--destructive)' }}>{goalWeight} kg</p>
         </div>
-        <div className="bg-card rounded-lg p-6 border border-border shadow-sm">
+        <div className="p-6">
           <h3 className="text-sm font-medium text-muted-foreground mb-2">Registros</h3>
           <p className="text-2xl font-bold" style={{ color: '#3b82f6' }}>{weightEntries.length}</p>
         </div>
-        <div className="bg-card rounded-lg p-6 border border-border shadow-sm">
+        <div className="p-6">
           <h3 className="text-sm font-medium text-muted-foreground mb-2">Progreso</h3>
           <p className="text-2xl font-bold text-primary">
             {currentWeight > 0 && goalWeight > 0 
@@ -126,7 +135,7 @@ export default function DashboardContent({ onProfileClick }: { onProfileClick?: 
       </div>
 
       {/* Chart Section */}
-      <div className="bg-card rounded-lg p-6 border border-border shadow-sm mb-8">
+      <div className="p-6 mb-8 w-full">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-foreground">Evolución de tu peso</h2>
           <button
@@ -164,13 +173,14 @@ export default function DashboardContent({ onProfileClick }: { onProfileClick?: 
 
       {/* Weight Entries List */}
       {weightEntries.length > 0 && (
-        <div className="bg-card rounded-lg p-6 border border-border shadow-sm">
+        <div className="p-6 w-full">
           <h2 className="text-xl font-semibold text-foreground mb-6">Historial de registros</h2>
-          <div className="space-y-3">
+          <div className="mb-4 text-base text-muted-foreground">El progreso no siempre es lineal, pero cada registro cuenta. Mantente constante, celebra cada avance y recuerda que los pequeños pasos diarios construyen grandes resultados a lo largo del tiempo.</div>
+          <div className="space-y-3 w-full">
             {weightEntries
               .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
               .map((entry) => (
-                <div key={entry.id} className="flex justify-between items-center p-4 bg-background/50 rounded-lg border border-border">
+                <div key={entry.id} className="flex justify-between items-center p-4 bg-background/50 rounded-lg border border-border w-full flex-grow min-w-0">
                   <div>
                     <p className="font-medium text-foreground">
                       {format(new Date(entry.date), "EEEE, d 'de' MMMM", { locale: es })}

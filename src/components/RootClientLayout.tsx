@@ -9,7 +9,7 @@ export default function RootClientLayout({ children }: { children: React.ReactNo
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar onProfileClick={() => setProfileOpen(true)} />
-      <SidebarShell />
+      <SidebarShell onProfileClick={() => setProfileOpen(true)} />
       <ProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} />
       <div className="flex-1 flex flex-col">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 lg:pl-20 w-full">

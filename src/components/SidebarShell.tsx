@@ -94,7 +94,7 @@ function Sidebar({ activeTab, onTabChange }: { activeTab: ActiveTab; onTabChange
   );
 }
 
-export default function SidebarShell() {
+export default function SidebarShell({ onProfileClick }: { onProfileClick?: () => void }) {
   const pathname = usePathname();
   const showSidebar = pathname.startsWith('/dashboard');
   const [activeTab, setActiveTab] = useState<ActiveTab>('progress');
@@ -120,7 +120,7 @@ export default function SidebarShell() {
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
           >
-            <ContentComponent />
+            <ContentComponent onProfileClick={onProfileClick} />
           </motion.div>
         </AnimatePresence>
       </div>

@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Modal } from "react-responsive-modal";
 import "react-responsive-modal/styles.css";
 import { FaRegSmile, FaDumbbell, FaLeaf, FaHandsHelping, FaUserEdit } from "react-icons/fa";
-import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 
 const Confetti = dynamic(() => import("react-confetti"), { ssr: false });
@@ -37,13 +36,22 @@ const cards = [
   },
 ];
 
-export default function WelcomeModal({ show, onClose }: { show: boolean; onClose: () => void }) {
+export default function WelcomeModal({ 
+  show, 
+  onClose, 
+  onProfileClick 
+}: { 
+  show: boolean; 
+  onClose: () => void;
+  onProfileClick?: () => void;
+}) {
   const [step, setStep] = useState(0);
-  const router = useRouter();
 
   const handleFinal = () => {
     onClose();
-    router.push("/perfil");
+    if (onProfileClick) {
+      onProfileClick();
+    }
   };
 
   return (

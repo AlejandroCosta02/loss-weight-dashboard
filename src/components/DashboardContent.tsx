@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import WeightChart from "@/components/WeightChart";
 import WeightEntryForm from "@/components/WeightEntryForm";
 import { format } from "date-fns";
@@ -20,9 +19,8 @@ interface UserData {
   dailyWeights: WeightEntry[];
 }
 
-export default function DashboardContent() {
+export default function DashboardContent({ onProfileClick }: { onProfileClick?: () => void }) {
   const { data: session } = useSession();
-  const router = useRouter();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -84,7 +82,7 @@ export default function DashboardContent() {
             Para comenzar a registrar tu progreso, completa tu información en el perfil.
           </p>
           <button
-            onClick={() => router.push("/perfil")}
+            onClick={onProfileClick}
             className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-full font-bold transition-all shadow-lg"
           >
             Completar perfil

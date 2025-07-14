@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import type { Session } from "next-auth";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { HeartbeatSpinner } from 'spinner-zilla';
@@ -47,16 +48,12 @@ export default function ProfileModal({ open, onClose }: { open: boolean; onClose
   const { data: session, status } = useSession();
   const [form, setForm] = useState(initialState);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [success, setSuccess] = useState(false);
   const [goalWeight, setGoalWeight] = useState(70);
   const [loading, setLoading] = useState(true);
-  const [showLoading, setShowLoading] = useState(false);
-  const [showGoal, setShowGoal] = useState(false);
 
   // Reset modal state on open
   useEffect(() => {
     if (open) {
-      setSuccess(false);
       setErrors({});
     }
   }, [open]);
@@ -145,7 +142,7 @@ export default function ProfileModal({ open, onClose }: { open: boolean; onClose
   ];
   const completedFields = requiredFields.filter(f => String(form[f.key]).trim() !== '');
 
-  function validate(form: FormState, session: any, goalWeight: number) {
+  function validate(form: FormState, session: Session | null, goalWeight: number) {
     const newErrors: Record<string, string> = {};
     if (!form.profileImage && !session?.user?.image) {
       newErrors.profileImage = "La imagen es obligatoria.";
@@ -216,15 +213,12 @@ export default function ProfileModal({ open, onClose }: { open: boolean; onClose
         body: JSON.stringify(requestBody),
       });
       if (res.ok) {
-        setSuccess(true);
         toast.success("¡Perfil guardado con éxito!");
         setTimeout(() => onClose(), 2000);
       } else {
-        setSuccess(false);
         setErrors({ submit: "Error al guardar el perfil. Intenta de nuevo." });
       }
     } catch {
-      setSuccess(false);
       setErrors({ submit: "Error de conexión. Intenta de nuevo." });
     }
   };

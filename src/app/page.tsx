@@ -1,5 +1,4 @@
 "use client";
-import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import { FaCalculator, FaChartLine, FaHandsHelping } from "react-icons/fa";
 import LandingCTA from "@/components/LandingCTA";
@@ -25,14 +24,13 @@ const images = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Navbar />
+    <>
       {/* Hero Section */}
       <section className="flex flex-col items-center justify-center flex-1 px-4 py-8 sm:py-12 text-center">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground mb-4 drop-shadow-sm">
           Tu camino hacia el cambio comienza hoy
         </h1>
-        <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-xl mx-auto">
+        <p className="text-muted-foreground mb-6">
           Calcula tu progreso, visualiza tu meta, y transforma tu salud
         </p>
         <div className="flex flex-wrap justify-center gap-3 sm:gap-6 mb-6 sm:mb-8">
@@ -58,7 +56,7 @@ export default function Home() {
       {/* Beneficios */}
       <section className="max-w-4xl mx-auto py-8 sm:py-10 px-4 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
         <div className="flex flex-col items-center text-center">
-          <FaCalculator className="text-3xl sm:text-4xl text-accent mb-2" />
+          <FaCalculator className="text-3xl sm:text-4xl text-primary mb-2" />
           <h3 className="font-bold text-base sm:text-lg text-foreground mb-1">Calculadora inteligente</h3>
           <p className="text-muted-foreground text-xs sm:text-sm">Obtén métricas claras y personalizadas para tu progreso.</p>
         </div>
@@ -73,10 +71,6 @@ export default function Home() {
           <p className="text-muted-foreground text-xs sm:text-sm">Te acompañamos en cada paso con motivación y empatía.</p>
         </div>
       </section>
-      {/* Footer */}
-      <footer className="w-full py-4 sm:py-6 text-center text-muted-foreground text-xs sm:text-sm border-t border-border bg-card/50 mt-auto">
-        © {new Date().getFullYear()} MiProgreso. Próximamente más enlaces.
-      </footer>
-    </div>
+    </>
   );
 }

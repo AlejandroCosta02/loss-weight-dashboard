@@ -273,7 +273,7 @@ export default function WorkoutContent() {
       </div>
 
       <div className="text-center mt-8 text-muted-foreground text-sm">
-        <span>Recuerda: cada entrenamiento cuenta para tu progreso. ¡Sigue así! 💪</span>
+        <span>Cada entrenamiento que registras es un paso hacia tus objetivos de fitness. La consistencia es la clave del éxito, y cada sesión de ejercicio contribuye a mejorar tu salud física y mental. Recuerda que el progreso no siempre es lineal, pero cada esfuerzo cuenta en tu camino hacia una vida más saludable y activa.</span>
       </div>
     </div>
   );

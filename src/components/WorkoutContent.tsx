@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { FaWalking, FaRunning, FaBiking, FaSwimmer, FaPrayingHands, FaDumbbell, FaFutbol, FaMountain, FaMusic, FaFistRaised } from "react-icons/fa";
 import toast from "react-hot-toast";
 
@@ -28,6 +28,15 @@ function todayISO() {
   return d.toISOString().slice(0, 10);
 }
 
+type Workout = {
+  id: string;
+  fecha: string;
+  duracion: number;
+  actividad: string;
+  intensidad: string;
+  calorias: number;
+};
+
 export default function WorkoutContent() {
   const [isVisible, setIsVisible] = useState(false);
   const [fecha, setFecha] = useState(todayISO());
@@ -36,7 +45,7 @@ export default function WorkoutContent() {
   const [intensidad, setIntensidad] = useState(INTENSIDADES[0].value);
   const [calorias, setCalorias] = useState("");
   const [loading, setLoading] = useState(false);
-  const [historialEntrenamientos, setHistorialEntrenamientos] = useState<any[]>([]);
+  const [historialEntrenamientos, setHistorialEntrenamientos] = useState<Workout[]>([]);
   const [totalCaloriasDia, setTotalCaloriasDia] = useState(0);
   const [loadingHistorial, setLoadingHistorial] = useState(true);
 
@@ -47,7 +56,7 @@ export default function WorkoutContent() {
   }, []);
 
   // Cargar historial de entrenamientos del día
-  const cargarHistorial = async () => {
+  const cargarHistorial = useCallback(async () => {
     try {
       setLoadingHistorial(true);
       const res = await fetch(`/api/user/workout?fecha=${fecha}`);
@@ -56,7 +65,7 @@ export default function WorkoutContent() {
         setHistorialEntrenamientos(entrenamientos);
         
         // Calcular total de calorías del día
-        const total = entrenamientos.reduce((sum: number, entrenamiento: any) => sum + entrenamiento.calorias, 0);
+        const total = entrenamientos.reduce((sum: number, entrenamiento: Workout) => sum + entrenamiento.calorias, 0);
         setTotalCaloriasDia(total);
       }
     } catch (error) {
@@ -64,18 +73,17 @@ export default function WorkoutContent() {
     } finally {
       setLoadingHistorial(false);
     }
-  };
+  }, [fecha]);
 
   // Cargar historial cuando cambie la fecha
   useEffect(() => {
     cargarHistorial();
-  }, [fecha]);
+  }, [cargarHistorial]);
 
   // Calcular calorías basadas en duración e intensidad
   useEffect(() => {
     if (duracion && actividad) {
       const duracionMin = parseInt(duracion);
-      const actividadSeleccionada = ACTIVIDADES.find(a => a.value === actividad);
       
       // Calorías por minuto según actividad e intensidad
       const caloriasPorMinuto = {
@@ -160,14 +168,11 @@ export default function WorkoutContent() {
           <div>
             <label className="block text-sm font-medium text-foreground mb-1">Actividad</label>
             <select className="input w-full" value={actividad} onChange={e => setActividad(e.target.value)} required>
-              {ACTIVIDADES.map(act => {
-                const IconComponent = act.icon;
-                return (
-                  <option key={act.value} value={act.value}>
-                    {act.label}
-                  </option>
-                );
-              })}
+              {ACTIVIDADES.map(act => (
+                <option key={act.value} value={act.value}>
+                  {act.label}
+                </option>
+              ))}
             </select>
           </div>
           <div>

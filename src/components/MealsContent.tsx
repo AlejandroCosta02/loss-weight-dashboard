@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 import MealsByDayContent from "./MealsByDayContent";
 
@@ -79,7 +79,7 @@ export default function MealsContent() {
   }, []);
 
   // Cargar historial de comidas del día
-  const cargarHistorial = async () => {
+  const cargarHistorial = useCallback(async () => {
     try {
       setLoadingHistorial(true);
       const res = await fetch(`/api/user/meal?fecha=${fecha}`);
@@ -96,12 +96,12 @@ export default function MealsContent() {
     } finally {
       setLoadingHistorial(false);
     }
-  };
+  }, [fecha]);
 
   // Cargar historial cuando cambie la fecha
   useEffect(() => {
     cargarHistorial();
-  }, [fecha, cargarHistorial]);
+  }, [cargarHistorial]);
 
   // Calcular calorías totales
   useEffect(() => {

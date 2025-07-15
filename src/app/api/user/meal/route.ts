@@ -5,6 +5,45 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+type MealData = {
+  fecha: string;
+  hora: string;
+  tipoComida: string;
+  caloriasTotales: number;
+  alimentos: Array<{
+    foodId: string;
+    gramos: number;
+    calorias: number;
+  }>;
+};
+
+type DayMeals = {
+  date: string;
+  totalCalories: number;
+  meals: Array<{
+    id: string;
+    fecha: Date;
+    hora: string;
+    tipoComida: string;
+    caloriasTotales: number;
+    mealItems: Array<{
+      id: string;
+      food: {
+        id: string;
+        nombre: string;
+        calorias: number;
+        proteinas: number;
+        grasas: number;
+        carbohidratos: number;
+        gramosPorUnidad: number | null;
+        unidad: string;
+      };
+      gramos: number;
+      calorias: number;
+    }>;
+  }>;
+};
+
 // GET: List meals for the logged-in user (optionally by date)
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
@@ -35,7 +74,7 @@ export async function GET(req: Request) {
     });
 
     // Group meals by day
-    const mealsByDay = meals.reduce((acc: any, meal) => {
+    const mealsByDay = meals.reduce((acc: Record<string, DayMeals>, meal) => {
       const dateKey = meal.fecha.toISOString().split('T')[0];
       if (!acc[dateKey]) {
         acc[dateKey] = {
@@ -50,14 +89,14 @@ export async function GET(req: Request) {
     }, {});
 
     // Convert to array and sort by date (newest first)
-    const result = Object.values(mealsByDay).sort((a: any, b: any) => 
+    const result = Object.values(mealsByDay).sort((a: DayMeals, b: DayMeals) => 
       new Date(b.date).getTime() - new Date(a.date).getTime()
     );
 
     return NextResponse.json(result);
   }
 
-  const where: any = { userId: user.id };
+  const where: { userId: string; fecha?: { gte: Date; lt: Date } } = { userId: user.id };
   if (fecha) {
     const date = new Date(fecha);
     where.fecha = {
@@ -94,17 +133,17 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     // Expect: { fecha, hora, tipoComida, alimentos: [{ foodId, gramos, calorias }], caloriasTotales }
-    const { fecha, hora, tipoComida, alimentos, caloriasTotales } = body;
+    const { fecha, hora, tipoComida, alimentos, caloriasTotales }: MealData = body;
     
     if (!fecha || !hora || !tipoComida || !alimentos || alimentos.length === 0) {
       return NextResponse.json({ error: "Datos incompletos" }, { status: 400 });
     }
 
     // Validate and convert data types
-    const validatedAlimentos = alimentos.map((a: any) => ({
+    const validatedAlimentos = alimentos.map((a) => ({
       foodId: String(a.foodId),
-      gramos: parseFloat(a.gramos),
-      calorias: parseFloat(a.calorias),
+      gramos: parseFloat(String(a.gramos)),
+      calorias: parseFloat(String(a.calorias)),
     }));
 
     const meal = await prisma.meal.create({
@@ -113,7 +152,7 @@ export async function POST(req: Request) {
         fecha: new Date(fecha),
         hora: String(hora),
         tipoComida: String(tipoComida),
-        caloriasTotales: parseFloat(caloriasTotales),
+        caloriasTotales: parseFloat(String(caloriasTotales)),
         mealItems: {
           create: validatedAlimentos,
         },
@@ -123,11 +162,11 @@ export async function POST(req: Request) {
       },
     });
     return NextResponse.json(meal);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error creating meal:", error);
     return NextResponse.json({ 
       error: "Error al crear la comida", 
-      details: error.message 
+      details: error instanceof Error ? error.message : "Unknown error"
     }, { status: 500 });
   }
 } 

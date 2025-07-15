@@ -101,7 +101,7 @@ export default function MealsContent() {
   // Cargar historial cuando cambie la fecha
   useEffect(() => {
     cargarHistorial();
-  }, [fecha]);
+  }, [fecha, cargarHistorial]);
 
   // Calcular calorías totales
   useEffect(() => {

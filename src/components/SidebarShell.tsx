@@ -121,7 +121,7 @@ export default function SidebarShell({ onProfileClick }: { onProfileClick?: () =
             transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
           >
             {activeTab === 'progress' ? (
-              <div className="bg-card rounded-lg p-12 border border-border shadow-sm text-center w-full max-w-6xl mx-auto">
+              <div className="p-12 text-center w-full max-w-6xl mx-auto">
                 <DashboardContent onProfileClick={onProfileClick} />
               </div>
             ) : (

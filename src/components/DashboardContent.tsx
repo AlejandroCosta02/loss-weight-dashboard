@@ -180,7 +180,7 @@ export default function DashboardContent({ onProfileClick }: { onProfileClick?: 
             {weightEntries
               .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
               .map((entry) => (
-                <div key={entry.id} className="flex justify-between items-center p-4 bg-background/50 rounded-lg border border-border w-full flex-grow min-w-0">
+                <div key={entry.id} className="flex justify-between items-center p-4 w-full">
                   <div>
                     <p className="font-medium text-foreground">
                       {format(new Date(entry.date), "EEEE, d 'de' MMMM", { locale: es })}

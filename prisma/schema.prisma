@@ -16,6 +16,8 @@ model User {
   userData      UserData?
   accounts      Account[]
   sessions      Session[]
+  workouts      Workout[]
+  meals         Meal[]
 }
 
 model UserData {
@@ -76,4 +78,53 @@ model VerificationToken {
   token      String   @unique
   expires    DateTime
   @@unique([identifier, token])
+}
+
+model Workout {
+  id         String   @id @default(cuid())
+  userId     String
+  fecha      DateTime
+  duracion   Int
+  actividad  String
+  intensidad String
+  calorias   Float
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model Food {
+  id          String   @id @default(cuid())
+  nombre      String   @unique
+  calorias    Float    // por 100g
+  proteinas   Float    // por 100g
+  grasas      Float    // por 100g
+  carbohidratos Float  // por 100g
+  gramosPorUnidad Float? // gramos por unidad (ej: 60g por huevo)
+  unidad      String   @default("g") // "g", "unidad", "ml", etc.
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  mealItems   MealItem[]
+}
+
+model Meal {
+  id            String     @id @default(cuid())
+  userId        String
+  fecha         DateTime
+  hora          String
+  tipoComida    String     // desayuno, almuerzo, cena, merienda, snack
+  caloriasTotales Float
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  user          User       @relation(fields: [userId], references: [id])
+  mealItems     MealItem[]
+}
+
+model MealItem {
+  id        String   @id @default(cuid())
+  mealId    String
+  foodId    String
+  gramos    Float
+  calorias  Float
+  meal      Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  food      Food     @relation(fields: [foodId], references: [id])
+  createdAt DateTime @default(now())
 } 

@@ -25,7 +25,7 @@ export default function LineChartMultiMetrics({ data, caloriesGoal }: LineChartM
     return () => clearTimeout(timer);
   }, []);
 
-  const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: any[]; label?: string }) => {
+  const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ dataKey: string; value: number }>; label?: string }) => {
     if (active && payload && payload.length) {
       const consumed = payload.find(p => p.dataKey === 'consumidas')?.value || 0;
       const burned = payload.find(p => p.dataKey === 'quemadas')?.value || 0;

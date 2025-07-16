@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Modal } from "react-responsive-modal";
 import "react-responsive-modal/styles.css";
-import { format } from "date-fns";
 
 interface WeightEntryFormProps {
   onClose: () => void;

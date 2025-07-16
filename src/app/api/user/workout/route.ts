@@ -47,10 +47,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Faltan datos obligatorios" }, { status: 400 });
   }
   try {
+    // Ajustar la fecha a mediodía para evitar desfase de zona horaria
+    let fechaFinal: Date;
+    if (typeof fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+      fechaFinal = new Date(fecha + 'T12:00:00');
+    } else {
+      fechaFinal = new Date(fecha);
+    }
     const workout = await prisma.workout.create({
       data: {
         userId: user.id,
-        fecha: new Date(fecha),
+        fecha: fechaFinal,
         duracion: Number(duracion),
         actividad,
         intensidad,

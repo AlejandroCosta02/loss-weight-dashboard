@@ -10,8 +10,9 @@ import DashboardContent from "@/components/DashboardContent";
 import MealsContent from "@/components/MealsContent";
 import WorkoutContent from "@/components/WorkoutContent";
 import WaterContent from "@/components/WaterContent";
+import MainContent from "@/components/MainContent";
 
-type ActiveTab = 'progress' | 'meals' | 'workout' | 'water';
+type ActiveTab = 'main' | 'progress' | 'meals' | 'workout' | 'water';
 
 function Sidebar({ activeTab, onTabChange }: { activeTab: ActiveTab; onTabChange: (tab: ActiveTab) => void }) {
   useTheme();
@@ -33,6 +34,7 @@ function Sidebar({ activeTab, onTabChange }: { activeTab: ActiveTab; onTabChange
   }, []);
 
   const items = [
+    { icon: activeTab === 'main' ? '/main-active.png' : '/main.png', label: 'Principal', tab: 'main' as ActiveTab },
     { icon: activeTab === 'progress' ? '/chart-active.png' : '/chart.png', label: 'Progreso', tab: 'progress' as ActiveTab },
     { icon: activeTab === 'meals' ? '/food-active.png' : '/food.png', label: 'Comidas', tab: 'meals' as ActiveTab },
     { icon: activeTab === 'workout' ? '/workout-active.png' : '/workout.png', label: 'Entrenamiento', tab: 'workout' as ActiveTab },
@@ -97,16 +99,17 @@ function Sidebar({ activeTab, onTabChange }: { activeTab: ActiveTab; onTabChange
 export default function SidebarShell({ onProfileClick }: { onProfileClick?: () => void }) {
   const pathname = usePathname();
   const showSidebar = pathname.startsWith('/dashboard');
-  const [activeTab, setActiveTab] = useState<ActiveTab>('progress');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('main');
 
   if (!showSidebar) return null;
 
   let ContentComponent;
-  if (activeTab === 'progress') ContentComponent = DashboardContent;
+  if (activeTab === 'main') ContentComponent = MainContent;
+  else if (activeTab === 'progress') ContentComponent = DashboardContent;
   else if (activeTab === 'meals') ContentComponent = MealsContent;
   else if (activeTab === 'workout') ContentComponent = WorkoutContent;
   else if (activeTab === 'water') ContentComponent = WaterContent;
-  else ContentComponent = DashboardContent;
+  else ContentComponent = MainContent;
 
   return (
     <>
@@ -120,13 +123,7 @@ export default function SidebarShell({ onProfileClick }: { onProfileClick?: () =
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
           >
-            {activeTab === 'progress' ? (
-              <div className="p-12 text-center w-full max-w-6xl mx-auto">
-                <DashboardContent onProfileClick={onProfileClick} />
-              </div>
-            ) : (
-              <ContentComponent onProfileClick={onProfileClick} />
-            )}
+            <ContentComponent onProfileClick={onProfileClick} />
           </motion.div>
         </AnimatePresence>
       </div>

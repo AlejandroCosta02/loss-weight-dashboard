@@ -53,19 +53,19 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Fecha requerida" }, { status: 400 });
     }
 
-    const fechaDate = new Date(fecha);
-    const fechaInicio = new Date(fechaDate.getFullYear(), fechaDate.getMonth(), fechaDate.getDate());
+    // Crear fecha usando la fecha string directamente
+    const [year, month, day] = fecha.split('-').map(Number);
+    const fechaInicio = new Date(year, month - 1, day, 0, 0, 0);
     const fechaFin = new Date(fechaInicio);
     fechaFin.setDate(fechaFin.getDate() + 1);
 
-    // Buscar o crear registro de agua para la fecha
+
+
+    // Buscar registro de agua para la fecha exacta
     let waterIntake = await prisma.waterIntake.findFirst({
       where: {
         userId: user.id,
-        fecha: {
-          gte: fechaInicio,
-          lt: fechaFin
-        }
+        fecha: fechaInicio
       },
       include: {
         registros: {
@@ -125,19 +125,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Fecha y cantidad válidas requeridas" }, { status: 400 });
     }
 
-    const fechaDate = new Date(fecha);
-    const fechaInicio = new Date(fechaDate.getFullYear(), fechaDate.getMonth(), fechaDate.getDate());
+    // Crear fecha usando la fecha string directamente
+    const [year, month, day] = fecha.split('-').map(Number);
+    const fechaInicio = new Date(year, month - 1, day, 0, 0, 0);
     const fechaFin = new Date(fechaInicio);
     fechaFin.setDate(fechaFin.getDate() + 1);
 
-    // Buscar registro existente o crear uno nuevo
+
+
+    // Buscar registro existente para la fecha exacta
     let waterIntake = await prisma.waterIntake.findFirst({
       where: {
         userId: user.id,
-        fecha: {
-          gte: fechaInicio,
-          lt: fechaFin
-        }
+        fecha: fechaInicio
       }
     });
 

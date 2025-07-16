@@ -98,10 +98,15 @@ export async function GET(req: Request) {
 
   const where: { userId: string; fecha?: { gte: Date; lt: Date } } = { userId: user.id };
   if (fecha) {
-    const date = new Date(fecha);
+    // Usar la misma lógica que el water API para consistencia
+    const [year, month, day] = fecha.split('-').map(Number);
+    const fechaInicio = new Date(year, month - 1, day, 0, 0, 0);
+    const fechaFin = new Date(fechaInicio);
+    fechaFin.setDate(fechaFin.getDate() + 1);
+    
     where.fecha = {
-      gte: new Date(date.setHours(0, 0, 0, 0)),
-      lt: new Date(date.setHours(24, 0, 0, 0)),
+      gte: fechaInicio,
+      lt: fechaFin,
     };
   }
 
@@ -146,10 +151,14 @@ export async function POST(req: Request) {
       calorias: parseFloat(String(a.calorias)),
     }));
 
+    // Usar la misma lógica de fecha que en el GET para consistencia
+    const [year, month, day] = fecha.split('-').map(Number);
+    const fechaMeal = new Date(year, month - 1, day, 0, 0, 0);
+    
     const meal = await prisma.meal.create({
       data: {
         userId: user.id,
-        fecha: new Date(fecha),
+        fecha: fechaMeal,
         hora: String(hora),
         tipoComida: String(tipoComida),
         caloriasTotales: parseFloat(String(caloriasTotales)),

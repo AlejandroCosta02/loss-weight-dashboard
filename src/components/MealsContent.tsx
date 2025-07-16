@@ -13,8 +13,11 @@ const TIPO_COMIDA = [
 ];
 
 function todayISO() {
-  const d = new Date();
-  return d.toISOString().slice(0, 10);
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 type Food = {
@@ -221,6 +224,9 @@ export default function MealsContent() {
       setAlimentos([{ food: null, gramos: "", calorias: 0, input: "", opciones: [], loading: false, esPorUnidad: false }]);
       // Recargar historial después de guardar
       cargarHistorial();
+      
+      // Disparar evento personalizado para actualizar MainContent
+      window.dispatchEvent(new CustomEvent('mealDataUpdated'));
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Error al guardar";
       toast.error(errorMessage);

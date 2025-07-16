@@ -24,8 +24,11 @@ const INTENSIDADES = [
 ];
 
 function todayISO() {
-  const d = new Date();
-  return d.toISOString().slice(0, 10);
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 type Workout = {
@@ -46,8 +49,9 @@ export default function WorkoutContent() {
   const [calorias, setCalorias] = useState("");
   const [loading, setLoading] = useState(false);
   const [historialEntrenamientos, setHistorialEntrenamientos] = useState<Workout[]>([]);
-  const [totalCaloriasDia, setTotalCaloriasDia] = useState(0);
   const [loadingHistorial, setLoadingHistorial] = useState(true);
+  const [filtroActividad, setFiltroActividad] = useState<string>("todas");
+  const [mesesExpandidos, setMesesExpandidos] = useState<Set<string>>(new Set());
 
   // Fade in
   useEffect(() => {
@@ -64,9 +68,7 @@ export default function WorkoutContent() {
         const entrenamientos = await res.json();
         setHistorialEntrenamientos(entrenamientos);
         
-        // Calcular total de calorías del día
-        const total = entrenamientos.reduce((sum: number, entrenamiento: Workout) => sum + entrenamiento.calorias, 0);
-        setTotalCaloriasDia(total);
+
       }
     } catch (error) {
       console.error("Error cargando historial:", error);
@@ -75,10 +77,70 @@ export default function WorkoutContent() {
     }
   }, [fecha]);
 
+  // Cargar todos los entrenamientos para el historial completo
+  const cargarHistorialCompleto = useCallback(async () => {
+    try {
+      setLoadingHistorial(true);
+      const res = await fetch('/api/user/workout');
+      if (res.ok) {
+        const entrenamientos = await res.json();
+        setHistorialEntrenamientos(entrenamientos);
+      }
+    } catch (error) {
+      console.error("Error cargando historial completo:", error);
+    } finally {
+      setLoadingHistorial(false);
+    }
+  }, []);
+
   // Cargar historial cuando cambie la fecha
   useEffect(() => {
     cargarHistorial();
   }, [cargarHistorial]);
+
+  // Cargar historial completo al montar el componente
+  useEffect(() => {
+    cargarHistorialCompleto();
+  }, [cargarHistorialCompleto]);
+
+  // Agrupar entrenamientos por mes
+  const entrenamientosAgrupados = historialEntrenamientos
+    .filter(entrenamiento => filtroActividad === "todas" || entrenamiento.actividad === filtroActividad)
+    .reduce((grupos, entrenamiento) => {
+      const fecha = new Date(entrenamiento.fecha);
+      const mesKey = `${fecha.getFullYear()}-${fecha.getMonth()}`;
+      const mesLabel = fecha.toLocaleDateString('es-ES', { 
+        year: 'numeric', 
+        month: 'long' 
+      });
+      
+      if (!grupos[mesKey]) {
+        grupos[mesKey] = {
+          label: mesLabel,
+          entrenamientos: []
+        };
+      }
+      grupos[mesKey].entrenamientos.push(entrenamiento);
+      return grupos;
+    }, {} as Record<string, { label: string; entrenamientos: Workout[] }>);
+
+  // Ordenar meses (más recientes primero)
+  const mesesOrdenados = Object.entries(entrenamientosAgrupados)
+    .sort(([a], [b]) => b.localeCompare(a))
+    .map(([key, data]) => ({ key, ...data }));
+
+  // Toggle expandir/colapsar mes
+  const toggleMes = (mesKey: string) => {
+    setMesesExpandidos(prev => {
+      const nuevo = new Set(prev);
+      if (nuevo.has(mesKey)) {
+        nuevo.delete(mesKey);
+      } else {
+        nuevo.add(mesKey);
+      }
+      return nuevo;
+    });
+  };
 
   // Calcular calorías basadas en duración e intensidad
   useEffect(() => {
@@ -139,6 +201,9 @@ export default function WorkoutContent() {
       setCalorias("");
       // Recargar historial después de guardar
       cargarHistorial();
+      
+      // Disparar evento personalizado para actualizar MainContent
+      window.dispatchEvent(new CustomEvent('workoutDataUpdated'));
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Error al guardar";
       toast.error(errorMessage);
@@ -197,31 +262,33 @@ export default function WorkoutContent() {
         </button>
       </form>
 
-      {/* Historial de entrenamientos del día */}
+      {/* Historial completo de entrenamientos */}
       <div className="max-w-4xl mx-auto mt-8">
         <div className="bg-muted/20 rounded-lg p-6 border border-border/30 shadow-sm">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6">
             <div>
               <h2 className="text-2xl font-bold text-foreground mb-2">
-                Historial del día
+                Historial de Entrenamientos
               </h2>
               <p className="text-muted-foreground">
-                {new Date(fecha).toLocaleDateString('es-ES', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
+                Todos tus entrenamientos organizados por mes
               </p>
             </div>
-            <div className="mt-4 lg:mt-0">
-              <div className="bg-primary/10 rounded-lg p-4 text-center">
-                <div className="text-3xl font-bold text-primary">
-                  {totalCaloriasDia} cal
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Total del día
-                </div>
+            <div className="mt-4 lg:mt-0 flex items-center space-x-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">Filtrar por actividad</label>
+                <select 
+                  className="input text-sm" 
+                  value={filtroActividad} 
+                  onChange={e => setFiltroActividad(e.target.value)}
+                >
+                  <option value="todas">Todas las actividades</option>
+                  {ACTIVIDADES.map(act => (
+                    <option key={act.value} value={act.value}>
+                      {act.label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>
@@ -231,29 +298,81 @@ export default function WorkoutContent() {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
               <p className="text-muted-foreground">Cargando historial...</p>
             </div>
-          ) : historialEntrenamientos.length > 0 ? (
+          ) : mesesOrdenados.length > 0 ? (
             <div className="space-y-4">
-              {historialEntrenamientos.map((entrenamiento) => {
-                const actividadSeleccionada = ACTIVIDADES.find(a => a.value === entrenamiento.actividad);
-                const IconComponent = actividadSeleccionada?.icon || FaDumbbell;
+              {mesesOrdenados.map(({ key, label, entrenamientos }) => {
+                const isExpanded = mesesExpandidos.has(key);
+                const totalCaloriasMes = entrenamientos.reduce((sum, e) => sum + e.calorias, 0);
+                
                 return (
-                  <div key={entrenamiento.id} className="bg-background/50 rounded-lg p-4 border border-border/30">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="flex items-center space-x-3">
-                        <IconComponent className="text-2xl text-primary" />
-                        <div>
-                          <h3 className="font-semibold text-foreground">
-                            {actividadSeleccionada?.label || entrenamiento.actividad}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">
-                            {entrenamiento.duracion} min • {entrenamiento.intensidad} intensidad
-                          </p>
+                  <div key={key} className="bg-background/50 rounded-lg border border-border/30 overflow-hidden">
+                    <button
+                      onClick={() => toggleMes(key)}
+                      className="w-full p-4 text-left hover:bg-muted/30 transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <span className="text-lg font-semibold text-foreground">{label}</span>
+                          <span className="text-sm text-muted-foreground">
+                            ({entrenamientos.length} entrenamiento{entrenamientos.length !== 1 ? 's' : ''})
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <span className="text-sm text-primary font-medium">
+                            {totalCaloriasMes} cal total
+                          </span>
+                          <svg 
+                            className={`w-5 h-5 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
                         </div>
                       </div>
-                      <div className="text-primary font-bold text-lg">
-                        {entrenamiento.calorias} cal
+                    </button>
+                    
+                    {isExpanded && (
+                      <div className="border-t border-border/30 p-4 space-y-3">
+                        {entrenamientos
+                          .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
+                          .map((entrenamiento) => {
+                            const actividadSeleccionada = ACTIVIDADES.find(a => a.value === entrenamiento.actividad);
+                            const IconComponent = actividadSeleccionada?.icon || FaDumbbell;
+                            const fechaLocal = new Date(entrenamiento.fecha).toLocaleDateString('es-ES', {
+                              weekday: 'short',
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric'
+                            });
+                            
+                            return (
+                              <div key={entrenamiento.id} className="bg-muted/30 rounded-lg p-3 border border-border/20">
+                                <div className="flex justify-between items-start">
+                                  <div className="flex items-center space-x-3">
+                                    <IconComponent className="text-xl text-primary" />
+                                    <div>
+                                      <h4 className="font-medium text-foreground">
+                                        {actividadSeleccionada?.label || entrenamiento.actividad}
+                                      </h4>
+                                      <p className="text-sm text-muted-foreground">
+                                        {entrenamiento.duracion} min • {entrenamiento.intensidad} intensidad
+                                      </p>
+                                      <p className="text-xs text-muted-foreground">
+                                        {fechaLocal}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="text-primary font-bold">
+                                    {entrenamiento.calorias} cal
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
                       </div>
-                    </div>
+                    )}
                   </div>
                 );
               })}
@@ -262,7 +381,7 @@ export default function WorkoutContent() {
             <div className="text-center py-8">
               <div className="text-4xl mb-4">💪</div>
               <p className="text-muted-foreground">
-                No hay entrenamientos registrados para este día
+                No hay entrenamientos registrados
               </p>
               <p className="text-sm text-muted-foreground mt-2">
                 ¡Agrega tu primer entrenamiento arriba!

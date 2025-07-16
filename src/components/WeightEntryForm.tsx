@@ -13,7 +13,13 @@ interface WeightEntryFormProps {
 }
 
 export default function WeightEntryForm({ onClose, onWeightAdded, currentWeight, goalWeight }: WeightEntryFormProps) {
-  const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [date, setDate] = useState(() => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  });
   const [weight, setWeight] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -110,7 +116,13 @@ export default function WeightEntryForm({ onClose, onWeightAdded, currentWeight,
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              max={format(new Date(), "yyyy-MM-dd")}
+              max={(() => {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+              })()}
               className="w-full rounded-lg border-2 border-border px-3 py-2 text-foreground bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 transition text-sm"
               required
             />

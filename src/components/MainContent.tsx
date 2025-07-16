@@ -3,10 +3,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import LineChartMultiMetrics from "./LineChartMultiMetrics";
 
 interface DashboardData {
   profile: {
     weight: number;
+    height: number;
     goal: string;
     age: number;
     gender: string;
@@ -39,6 +41,7 @@ export default function MainContent() {
   const [isVisible, setIsVisible] = useState(false);
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [chartType, setChartType] = useState<'balance' | 'line'>('line');
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -70,16 +73,16 @@ export default function MainContent() {
     cargarDatos();
   }, [cargarDatos]);
 
-  // Actualizar datos automáticamente cada 30 segundos
-  useEffect(() => {
-    if (!session?.user?.email) return;
+  // Actualizar datos automáticamente (deshabilitado)
+  // useEffect(() => {
+  //   if (!session?.user?.email) return;
 
-    const interval = setInterval(() => {
-      cargarDatos();
-    }, 30000); // 30 segundos
+  //   const interval = setInterval(() => {
+  //     cargarDatos();
+  //   }, 300000); // 5 minutos
 
-    return () => clearInterval(interval);
-  }, [session?.user?.email, cargarDatos]);
+  //   return () => clearInterval(interval);
+  // }, [session?.user?.email, cargarDatos]);
 
   // Escuchar eventos de actualización de datos
   useEffect(() => {
@@ -124,12 +127,62 @@ export default function MainContent() {
   const prepararDatosGrafico = () => {
     if (!dashboardData) return [];
     
-    return dashboardData.balanceData.map(item => ({
-      fecha: new Date(item.date).toLocaleDateString('es-ES', { weekday: 'short' }),
-      balance: item.balance,
-      consumidas: item.caloriesConsumed,
-      quemadas: item.caloriesBurned
-    }));
+    console.log('Balance data received:', dashboardData.balanceData);
+    
+    return dashboardData.balanceData.map(item => {
+      // Parse the date string directly to avoid timezone issues
+      const [year, month, day] = item.date.split('-').map(Number);
+      const date = new Date(year, month - 1, day);
+      
+      const dayOfWeek = date.toLocaleDateString('es-ES', { weekday: 'short' });
+      const monthDay = date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' });
+      
+      console.log(`Processing date: ${item.date} -> ${dayOfWeek} ${monthDay}`);
+      
+      return {
+        fecha: `${dayOfWeek}\n${monthDay}`,
+        balance: item.balance,
+        consumidas: item.caloriesConsumed,
+        quemadas: item.caloriesBurned
+      };
+    });
+  };
+
+  // Calcular calorías objetivo basado en el perfil
+  const calcularCaloriasObjetivo = (profile: DashboardData['profile']): number => {
+    if (!profile) return 2000;
+    
+    // Usar la fórmula de Mifflin-St Jeor (más precisa)
+    // BMR = 10 × weight(kg) + 6.25 × height(cm) - 5 × age(years) + 5 (male) or -161 (female)
+    
+    let bmr = 0;
+    if (profile.gender === 'Masculino') {
+      bmr = (10 * profile.weight) + (6.25 * profile.height) - (5 * profile.age) + 5;
+    } else {
+      bmr = (10 * profile.weight) + (6.25 * profile.height) - (5 * profile.age) - 161;
+    }
+    
+    // Factor de actividad
+    const activityMultipliers = {
+      'sedentario': 1.2,      // Poco o ningún ejercicio
+      'ligero': 1.375,        // Ejercicio ligero 1-3 días/semana
+      'moderado': 1.55,       // Ejercicio moderado 3-5 días/semana
+      'activo': 1.725,        // Ejercicio intenso 6-7 días/semana
+      'muy_activo': 1.9       // Ejercicio muy intenso, trabajo físico
+    };
+    
+    const tdee = bmr * (activityMultipliers[profile.activityLevel as keyof typeof activityMultipliers] || 1.2);
+    
+    // Para pérdida de peso, crear un déficit de 500-750 calorías
+    // Esto resulta en una pérdida de 0.5-1 kg por semana
+    const deficit = Math.min(750, Math.max(500, tdee * 0.2)); // 20% máximo, mínimo 500 cal
+    
+    const targetCalories = Math.round(tdee - deficit);
+    
+    // Asegurar que no sea demasiado bajo (mínimo 1200 para mujeres, 1500 para hombres)
+    const minCalories = profile.gender === 'Masculino' ? 1500 : 1200;
+    
+    return Math.max(targetCalories, minCalories);
   };
 
   // Obtener mensaje motivacional basado en el balance
@@ -272,31 +325,128 @@ export default function MainContent() {
               <h2 className="text-xl font-semibold text-foreground">
                 Balance Calórico Semanal
               </h2>
-              <div className="text-2xl">📊</div>
+              <div className="flex items-center gap-2">
+                {/* Chart type toggle */}
+                <div className="flex bg-muted rounded-lg p-1">
+                  <button
+                    onClick={() => setChartType('balance')}
+                    className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                      chartType === 'balance'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    Balance
+                  </button>
+                  <button
+                    onClick={() => setChartType('line')}
+                    className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                      chartType === 'line'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    Líneas
+                  </button>
+                </div>
+                <div className="text-2xl">📊</div>
+              </div>
             </div>
             
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={prepararDatosGrafico()}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="fecha" />
-                  <YAxis />
-                  <Tooltip 
-                    formatter={(value: number, name: string) => [
-                      `${value} cal`, 
-                      name === 'balance' ? 'Balance' : 
-                      name === 'consumidas' ? 'Consumidas' : 'Quemadas'
-                    ]}
-                  />
-                  <Bar 
-                    dataKey="balance" 
-                    fill="#8884d8" 
-                    name="Balance"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            {/* Chart content */}
+            {chartType === 'balance' && (
+              <>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={prepararDatosGrafico()}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis 
+                        dataKey="fecha" 
+                        tick={({ x, y, payload }) => {
+                          const text = payload.value;
+                          const lines = text.split('\n');
+                          return (
+                            <g>
+                              <text
+                                x={x}
+                                y={y}
+                                dy={-8}
+                                textAnchor="middle"
+                                fontSize={12}
+                                fontWeight={600}
+                                fill="currentColor"
+                              >
+                                {lines[0]}
+                              </text>
+                              <text
+                                x={x}
+                                y={y}
+                                dy={8}
+                                textAnchor="middle"
+                                fontSize={10}
+                                fontWeight={400}
+                                fill="currentColor"
+                                opacity={0.7}
+                              >
+                                {lines[1]}
+                              </text>
+                            </g>
+                          );
+                        }}
+                      />
+                      <YAxis />
+                      <Tooltip 
+                        formatter={(value: number, name: string) => [
+                          `${value} cal`, 
+                          name === 'balance' ? 'Balance' : 
+                          name === 'consumidas' ? 'Consumidas' : 'Quemadas'
+                        ]}
+                      />
+                      <Bar 
+                        dataKey="balance" 
+                        fill="#8884d8" 
+                        name="Balance"
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                
+                {/* Debug info */}
+                <div className="mt-4 p-2 bg-muted rounded text-xs">
+                  <strong>Debug:</strong> Chart data points: {prepararDatosGrafico().length}
+                  <br />
+                  Dates: {prepararDatosGrafico().map(d => d.fecha.replace('\n', ' ')).join(', ')}
+                </div>
+              </>
+            )}
+            
+            {chartType === 'line' && (
+              <>
+                <LineChartMultiMetrics 
+                  data={prepararDatosGrafico()} 
+                  caloriesGoal={dashboardData.profile ? calcularCaloriasObjetivo(dashboardData.profile) : 2000}
+                />
+                
+                {/* Debug info for calorie calculation */}
+                {dashboardData.profile && (
+                  <div className="mt-4 p-3 bg-muted/30 rounded-lg text-xs">
+                    <div className="font-semibold mb-2">📊 Cálculo de Calorías Objetivo:</div>
+                                         <div className="grid grid-cols-2 gap-2 text-xs">
+                       <div>Peso: {dashboardData.profile.weight} kg</div>
+                       <div>Edad: {dashboardData.profile.age} años</div>
+                       <div>Género: {dashboardData.profile.gender}</div>
+                       <div>Actividad: {dashboardData.profile.activityLevel}</div>
+                       <div>Altura: {dashboardData.profile.height} cm</div>
+                       <div>BMR calculado: {Math.round((10 * dashboardData.profile.weight) + (6.25 * dashboardData.profile.height) - (5 * dashboardData.profile.age) + (dashboardData.profile.gender === 'Masculino' ? 5 : -161))} cal</div>
+                     </div>
+                    <div className="mt-2 text-primary font-medium">
+                      Objetivo diario: {calcularCaloriasObjetivo(dashboardData.profile)} cal
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
             
             <div className="mt-4 text-center">
               <p className="text-muted-foreground">

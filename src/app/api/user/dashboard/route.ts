@@ -8,6 +8,7 @@ const prisma = new PrismaClient();
 interface DashboardData {
   profile: {
     weight: number;
+    height: number;
     goal: string;
     age: number;
     gender: string;
@@ -239,10 +240,13 @@ export async function GET() {
 
     // Crear datos de balance para la semana
     const balanceData = [];
+    console.log('Today:', today.toISOString());
     for (let i = 6; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(date.getDate() - i);
       const dateStr = date.toISOString().split('T')[0];
+      
+      console.log(`Loop i=${i}: ${dateStr}`);
       
       const dayMeals = weeklyMeals.filter(m => 
         m.fecha.toISOString().split('T')[0] === dateStr
@@ -262,6 +266,9 @@ export async function GET() {
         balance
       });
     }
+    console.log('Final balance data dates:', balanceData.map(d => d.date));
+    
+
 
     // Calcular estadísticas semanales
     const totalWeeklyCalories = weeklyMeals.reduce((sum, meal) => sum + meal.caloriasTotales, 0);
@@ -283,6 +290,7 @@ export async function GET() {
     const dashboardData: DashboardData = {
       profile: user.userData ? {
         weight: user.userData.weight,
+        height: user.userData.height,
         goal: user.userData.goal,
         age: user.userData.age,
         gender: user.userData.gender,

@@ -153,8 +153,10 @@ export default function WaterContent() {
           }
         }, 100);
         
-        // Disparar evento personalizado para actualizar MainContent
-        window.dispatchEvent(new CustomEvent('waterDataUpdated'));
+        // Disparar evento personalizado para actualizar MainContent con un pequeño delay
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('waterDataUpdated'));
+        }, 200);
       } else {
         const error = await response.json();
         setMessage(`Error: ${error.error}`);

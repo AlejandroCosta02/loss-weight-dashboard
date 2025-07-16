@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
     const existingEntry = await prisma.dailyWeight.findFirst({
       where: {
         userDataId: user.userData.id,
-        date: new Date(date),
+        date: new Date(date + 'T00:00:00'),
       },
     });
 
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
     const dailyWeight = await prisma.dailyWeight.create({
       data: {
         userDataId: user.userData.id,
-        date: new Date(date),
+        date: new Date(date + 'T00:00:00'),
         weight: Number(weight),
       },
     });

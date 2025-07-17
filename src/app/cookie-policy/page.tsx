@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { FaCookieBite, FaShieldAlt, FaCog, FaEye, FaTrash, FaInfoCircle } from "react-icons/fa";
+import { FaCookieBite, FaShieldAlt, FaCog, FaEye, FaInfoCircle } from "react-icons/fa";
 import Link from "next/link";
 
 export default function CookiePolicy() {

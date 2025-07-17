@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { FaCalculator, FaChartLine, FaHandsHelping, FaUser, FaInfoCircle, FaShareAlt, FaEnvelope, FaHeart, FaUsers, FaBullseye, FaTrophy, FaMobile, FaDesktop, FaTablet, FaGithub, FaTwitter, FaLinkedin, FaInstagram } from "react-icons/fa";
+import { motion } from "framer-motion";
+import { FaCalculator, FaChartLine, FaHandsHelping, FaEnvelope, FaHeart, FaUsers, FaBullseye, FaTrophy, FaMobile, FaDesktop, FaTwitter, FaLinkedin, FaInstagram } from "react-icons/fa";
 import LandingCTA from "@/components/LandingCTA";
 import CookieConsent from "@/components/CookieConsent";
 
@@ -104,7 +104,6 @@ const contactInfo = [
 ];
 
 export default function Home() {
-  const [isVisible, setIsVisible] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [cookieConsent, setCookieConsent] = useState<string | null>(null);
 
@@ -114,9 +113,7 @@ export default function Home() {
     setCookieConsent(consent);
   }, []);
 
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
+
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId.replace('#', ''));

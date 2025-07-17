@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { FaShieldAlt, FaUser, FaDatabase, FaLock, FaEye, FaTrash } from "react-icons/fa";
+import { FaShieldAlt, FaUser, FaDatabase, FaLock, FaEye } from "react-icons/fa";
 import Link from "next/link";
 
 export default function PrivacyPolicy() {

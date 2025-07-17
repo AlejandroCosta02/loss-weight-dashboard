@@ -54,10 +54,10 @@ export default function TermsOfService() {
                 <div className="bg-card p-6 rounded-lg border border-border">
                   <h3 className="font-semibold text-foreground mb-3">Definiciones:</h3>
                   <ul className="space-y-2 text-sm">
-                    <li>• <strong>"Servicio":</strong> La aplicación KiloApp y todos sus componentes</li>
-                    <li>• <strong>"Usuario":</strong> Cualquier persona que acceda o utilice el servicio</li>
-                    <li>• <strong>"Contenido":</strong> Datos, información y materiales que proporcionas</li>
-                    <li>• <strong>"Cuenta":</strong> Tu registro personal en KiloApp</li>
+                                         <li>• <strong>&quot;Servicio&quot;:</strong> La aplicación KiloApp y todos sus componentes</li>
+                     <li>• <strong>&quot;Usuario&quot;:</strong> Cualquier persona que acceda o utilice el servicio</li>
+                     <li>• <strong>&quot;Contenido&quot;:</strong> Datos, información y materiales que proporcionas</li>
+                     <li>• <strong>&quot;Cuenta&quot;:</strong> Tu registro personal en KiloApp</li>
                   </ul>
                 </div>
               </div>
@@ -232,9 +232,9 @@ export default function TermsOfService() {
                       </p>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-foreground mb-2">Servicio "Tal Como Está"</h4>
+                      <h4 className="font-semibold text-foreground mb-2">Servicio &quot;Tal Como Está&quot;</h4>
                       <p className="text-sm">
-                        El servicio se proporciona "tal como está" sin garantías de ningún tipo, 
+                        El servicio se proporciona &quot;tal como está&quot; sin garantías de ningún tipo, 
                         expresas o implícitas.
                       </p>
                     </div>

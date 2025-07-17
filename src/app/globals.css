@@ -3,6 +3,10 @@
 @custom-variant dark (&:is(.dark *));
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
   body {
     letter-spacing: var(--tracking-normal);
   }

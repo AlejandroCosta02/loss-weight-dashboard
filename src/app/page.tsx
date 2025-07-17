@@ -105,12 +105,11 @@ const contactInfo = [
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState("home");
-  const [cookieConsent, setCookieConsent] = useState<string | null>(null);
 
   useEffect(() => {
     // Check for existing cookie consent
     const consent = localStorage.getItem('kiloapp-cookie-consent');
-    setCookieConsent(consent);
+    // We don't need to store this in state since CookieConsent handles it internally
   }, []);
 
 
@@ -148,13 +147,7 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleCookieAccept = () => {
-    setCookieConsent('accepted');
-  };
 
-  const handleCookieDecline = () => {
-    setCookieConsent('declined');
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
@@ -827,8 +820,8 @@ export default function Home() {
 
       {/* Cookie Consent Banner */}
       <CookieConsent 
-        onAccept={handleCookieAccept}
-        onDecline={handleCookieDecline}
+        onAccept={() => {}}
+        onDecline={() => {}}
       />
     </div>
   );

@@ -3,20 +3,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaCookieBite, FaTimes, FaShieldAlt } from "react-icons/fa";
 
-// Client-side only component to prevent hydration issues
-const ClientOnly = ({ children }: { children: React.ReactNode }) => {
-  const [hasMounted, setHasMounted] = useState(false);
 
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  if (!hasMounted) {
-    return null;
-  }
-
-  return <>{children}</>;
-};
 
 interface CookieConsentProps {
   onAccept: () => void;
@@ -25,8 +12,10 @@ interface CookieConsentProps {
 
 export default function CookieConsent({ onAccept, onDecline }: CookieConsentProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
+    setHasMounted(true);
     // Check if user has already made a choice
     // Only run on client side to avoid SSR issues
     if (typeof window !== 'undefined') {
@@ -53,10 +42,14 @@ export default function CookieConsent({ onAccept, onDecline }: CookieConsentProp
     onDecline();
   };
 
+  // Don't render anything until component has mounted on client
+  if (!hasMounted) {
+    return null;
+  }
+
   return (
-    <ClientOnly>
-      <AnimatePresence>
-        {isVisible && (
+    <AnimatePresence>
+      {isVisible && (
           <motion.div
             initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}
@@ -113,6 +106,5 @@ export default function CookieConsent({ onAccept, onDecline }: CookieConsentProp
         </motion.div>
       )}
     </AnimatePresence>
-    </ClientOnly>
   );
 } 

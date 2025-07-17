@@ -106,11 +106,7 @@ const contactInfo = [
 export default function Home() {
   const [activeSection, setActiveSection] = useState("home");
 
-  useEffect(() => {
-    // Check for existing cookie consent
-    const consent = localStorage.getItem('kiloapp-cookie-consent');
-    // We don't need to store this in state since CookieConsent handles it internally
-  }, []);
+
 
 
 

@@ -3,6 +3,21 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaCookieBite, FaTimes, FaShieldAlt } from "react-icons/fa";
 
+// Client-side only component to prevent hydration issues
+const ClientOnly = ({ children }: { children: React.ReactNode }) => {
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  if (!hasMounted) {
+    return null;
+  }
+
+  return <>{children}</>;
+};
+
 interface CookieConsentProps {
   onAccept: () => void;
   onDecline: () => void;
@@ -13,33 +28,41 @@ export default function CookieConsent({ onAccept, onDecline }: CookieConsentProp
 
   useEffect(() => {
     // Check if user has already made a choice
-    const cookieConsent = localStorage.getItem('kiloapp-cookie-consent');
-    if (!cookieConsent) {
-      setIsVisible(true);
+    // Only run on client side to avoid SSR issues
+    if (typeof window !== 'undefined') {
+      const cookieConsent = localStorage.getItem('kiloapp-cookie-consent');
+      if (!cookieConsent) {
+        setIsVisible(true);
+      }
     }
   }, []);
 
   const handleAccept = () => {
-    localStorage.setItem('kiloapp-cookie-consent', 'accepted');
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('kiloapp-cookie-consent', 'accepted');
+    }
     setIsVisible(false);
     onAccept();
   };
 
   const handleDecline = () => {
-    localStorage.setItem('kiloapp-cookie-consent', 'declined');
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('kiloapp-cookie-consent', 'declined');
+    }
     setIsVisible(false);
     onDecline();
   };
 
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          initial={{ opacity: 0, y: 100 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 100 }}
-          className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border shadow-2xl"
-        >
+    <ClientOnly>
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 100 }}
+            className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border shadow-2xl"
+          >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
               {/* Content */}
@@ -90,5 +113,6 @@ export default function CookieConsent({ onAccept, onDecline }: CookieConsentProp
         </motion.div>
       )}
     </AnimatePresence>
+    </ClientOnly>
   );
 } 

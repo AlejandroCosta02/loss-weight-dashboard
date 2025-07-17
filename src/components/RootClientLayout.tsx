@@ -18,10 +18,7 @@ export default function RootClientLayout({ children }: { children: React.ReactNo
           </main>
         </div>
       </div>
-      {/* Footer - outside the constrained container */}
-      <footer className="w-full py-4 sm:py-6 text-center text-muted-foreground text-xs sm:text-sm border-t border-border bg-card/50">
-        © {new Date().getFullYear()} MiProgreso. Próximamente más enlaces.
-      </footer>
+
     </div>
   );
 } 

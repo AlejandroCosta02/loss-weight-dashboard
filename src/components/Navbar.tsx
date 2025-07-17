@@ -30,7 +30,7 @@ export default function Navbar({ onProfileClick }: { onProfileClick?: () => void
               <div className="flex items-center space-x-2 sm:space-x-4">
                 <button
                   onClick={() => router.push("/dashboard")}
-                  className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
                   title="Inicio"
                 >
                   <Image
@@ -43,7 +43,7 @@ export default function Navbar({ onProfileClick }: { onProfileClick?: () => void
                 </button>
                 <button
                   onClick={onProfileClick}
-                  className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
                   title="Perfil"
                 >
                   <Image
@@ -56,7 +56,7 @@ export default function Navbar({ onProfileClick }: { onProfileClick?: () => void
                 </button>
                 <button
                   onClick={() => signOut()}
-                  className="bg-destructive hover:bg-destructive/90 text-destructive-foreground px-2 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors shadow-sm"
+                  className="bg-destructive hover:bg-destructive/90 text-destructive-foreground px-2 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors shadow-sm cursor-pointer"
                 >
                   Salir
                 </button>
@@ -65,13 +65,13 @@ export default function Navbar({ onProfileClick }: { onProfileClick?: () => void
               <div className="flex items-center space-x-2 sm:space-x-4">
                 <button
                   onClick={() => signIn("google")}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-2 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors shadow-sm"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-2 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors shadow-sm cursor-pointer"
                 >
                   Entrar
                 </button>
                 <button
                   onClick={() => signIn("google")}
-                  className="bg-accent hover:bg-accent/90 text-accent-foreground px-2 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors shadow-sm"
+                  className="bg-accent hover:bg-accent/90 text-accent-foreground px-2 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors shadow-sm cursor-pointer"
                 >
                   Registro
                 </button>

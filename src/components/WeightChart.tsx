@@ -184,13 +184,13 @@ export default function WeightChart({ data, goalWeight, currentWeight }: WeightC
             {false && (
               <ReferenceLine
                 y={currentWeight}
-                stroke={theme === 'midnight' ? '#fff' : '#111'}
+                stroke={theme === 'dark' ? '#fff' : '#111'}
                 strokeDasharray="3 3"
                 strokeWidth={2}
                 label={{
                   value: `Actual: ${currentWeight} kg`,
                   position: 'center',
-                  fill: theme === 'midnight' ? '#fff' : '#111',
+                  fill: theme === 'dark' ? '#fff' : '#111',
                   fontSize: 13,
                   fontWeight: 700,
                 }}

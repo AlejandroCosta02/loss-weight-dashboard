@@ -105,9 +105,11 @@ const contactInfo = [
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState("home");
+  const [hasMounted, setHasMounted] = useState(false);
 
-
-
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
 
   const scrollToSection = (sectionId: string) => {
@@ -202,42 +204,46 @@ export default function Home() {
         >
           {/* Decorative Shapes */}
           <div className="absolute inset-0">
-            <motion.div
-              animate={{ 
-                rotate: [0, 360],
-                scale: [1, 1.1, 1]
-              }}
-              transition={{ 
-                duration: 20,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-              className="absolute top-20 left-20 w-32 h-32 bg-yellow-400/30 rounded-full blur-xl"
-            />
-            <motion.div
-              animate={{ 
-                y: [0, -20, 0],
-                x: [0, 10, 0]
-              }}
-              transition={{ 
-                duration: 8,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              className="absolute top-40 right-20 w-24 h-24 bg-cyan-400/30 rounded-full blur-xl"
-            />
-            <motion.div
-              animate={{ 
-                rotate: [0, -360],
-                scale: [1, 0.8, 1]
-              }}
-              transition={{ 
-                duration: 15,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-              className="absolute bottom-20 left-32 w-20 h-20 bg-pink-400/30 rounded-full blur-xl"
-            />
+            {hasMounted && (
+              <>
+                <motion.div
+                  animate={{ 
+                    rotate: [0, 360],
+                    scale: [1, 1.1, 1]
+                  }}
+                  transition={{ 
+                    duration: 20,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                  className="absolute top-20 left-20 w-32 h-32 bg-yellow-400/30 rounded-full blur-xl"
+                />
+                <motion.div
+                  animate={{ 
+                    y: [0, -20, 0],
+                    x: [0, 10, 0]
+                  }}
+                  transition={{ 
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="absolute top-40 right-20 w-24 h-24 bg-cyan-400/30 rounded-full blur-xl"
+                />
+                <motion.div
+                  animate={{ 
+                    rotate: [0, -360],
+                    scale: [1, 0.8, 1]
+                  }}
+                  transition={{ 
+                    duration: 15,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                  className="absolute bottom-20 left-32 w-20 h-20 bg-pink-400/30 rounded-full blur-xl"
+                />
+              </>
+            )}
           </div>
 
           {/* Main Image Placeholder */}
@@ -285,13 +291,15 @@ export default function Home() {
                 {/* Overlay with gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                 {/* Floating badge */}
-                <motion.div
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-semibold"
-                >
-                  📏 Progreso
-                </motion.div>
+                {hasMounted && (
+                  <motion.div
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-semibold"
+                  >
+                    📏 Progreso
+                  </motion.div>
+                )}
               </motion.div>
 
               {/* Floating Food Improvement Image */}
@@ -326,13 +334,15 @@ export default function Home() {
                 </div>
                 
                 <div className="absolute inset-0 bg-gradient-to-br from-green-500/60 to-transparent" />
-                <motion.div
-                  animate={{ rotate: [0, 5, -5, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-green-600 px-2 py-1 rounded-full text-xs font-bold"
-                >
-                  🥗 Nutrición
-                </motion.div>
+                {hasMounted && (
+                  <motion.div
+                    animate={{ rotate: [0, 5, -5, 0] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-green-600 px-2 py-1 rounded-full text-xs font-bold"
+                  >
+                    🥗 Nutrición
+                  </motion.div>
+                )}
               </motion.div>
 
               {/* Floating Water Image */}
@@ -367,74 +377,78 @@ export default function Home() {
                 </div>
                 
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/60 to-transparent" />
-                <motion.div
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm text-cyan-600 px-2 py-1 rounded-full text-xs font-bold"
-                >
-                  💧 Agua
-                </motion.div>
+                {hasMounted && (
+                  <motion.div
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm text-cyan-600 px-2 py-1 rounded-full text-xs font-bold"
+                  >
+                    💧 Agua
+                  </motion.div>
+                )}
               </motion.div>
 
               {/* Animated particles and waves */}
-              <div className="absolute inset-0 overflow-hidden rounded-2xl">
-                {/* Floating particles */}
-                {[...Array(8)].map((_, i) => (
+              {hasMounted && (
+                <div className="absolute inset-0 overflow-hidden rounded-2xl">
+                  {/* Floating particles */}
+                  {[...Array(8)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ 
+                        x: Math.random() * 100 - 50, 
+                        y: Math.random() * 100 - 50,
+                        opacity: 0 
+                      }}
+                      animate={{ 
+                        x: Math.random() * 200 - 100, 
+                        y: Math.random() * 200 - 100,
+                        opacity: [0, 1, 0],
+                        scale: [0, 1, 0]
+                      }}
+                      transition={{ 
+                        duration: 3 + Math.random() * 2,
+                        repeat: Infinity,
+                        delay: i * 0.3,
+                        ease: "easeInOut"
+                      }}
+                      className="absolute w-2 h-2 bg-gradient-to-r from-primary to-accent rounded-full"
+                      style={{
+                        left: `${20 + (i * 10)}%`,
+                        top: `${20 + (i * 8)}%`
+                      }}
+                    />
+                  ))}
+                  
+                  {/* Color waves */}
                   <motion.div
-                    key={i}
-                    initial={{ 
-                      x: Math.random() * 100 - 50, 
-                      y: Math.random() * 100 - 50,
-                      opacity: 0 
-                    }}
                     animate={{ 
-                      x: Math.random() * 200 - 100, 
-                      y: Math.random() * 200 - 100,
-                      opacity: [0, 1, 0],
-                      scale: [0, 1, 0]
+                      scale: [1, 1.2, 1],
+                      opacity: [0.3, 0.6, 0.3]
                     }}
                     transition={{ 
-                      duration: 3 + Math.random() * 2,
+                      duration: 4,
                       repeat: Infinity,
-                      delay: i * 0.3,
                       ease: "easeInOut"
                     }}
-                    className="absolute w-2 h-2 bg-gradient-to-r from-primary to-accent rounded-full"
-                    style={{
-                      left: `${20 + (i * 10)}%`,
-                      top: `${20 + (i * 8)}%`
-                    }}
+                    className="absolute inset-4 rounded-xl bg-gradient-to-br from-primary/20 via-accent/20 to-transparent"
                   />
-                ))}
-                
-                {/* Color waves */}
-                <motion.div
-                  animate={{ 
-                    scale: [1, 1.2, 1],
-                    opacity: [0.3, 0.6, 0.3]
-                  }}
-                  transition={{ 
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                  className="absolute inset-4 rounded-xl bg-gradient-to-br from-primary/20 via-accent/20 to-transparent"
-                />
-                
-                <motion.div
-                  animate={{ 
-                    scale: [1.2, 1, 1.2],
-                    opacity: [0.2, 0.5, 0.2]
-                  }}
-                  transition={{ 
-                    duration: 6,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 2
-                  }}
-                  className="absolute inset-8 rounded-xl bg-gradient-to-br from-accent/20 via-primary/20 to-transparent"
-                />
-              </div>
+                  
+                  <motion.div
+                    animate={{ 
+                      scale: [1.2, 1, 1.2],
+                      opacity: [0.2, 0.5, 0.2]
+                    }}
+                    transition={{ 
+                      duration: 6,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: 2
+                    }}
+                    className="absolute inset-8 rounded-xl bg-gradient-to-br from-accent/20 via-primary/20 to-transparent"
+                  />
+                </div>
+              )}
             </motion.div>
           </div>
         </motion.div>
@@ -469,13 +483,15 @@ export default function Home() {
               <span className="text-primary">Encuentra tu</span>
               <br />
               <span className="text-foreground">mejor versión</span>
-              <motion.span
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="inline-block ml-2 text-2xl"
-              >
-                ✨
-              </motion.span>
+              {hasMounted && (
+                <motion.span
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="inline-block ml-2 text-2xl"
+                >
+                  ✨
+                </motion.span>
+              )}
             </motion.h1>
 
             {/* Description */}

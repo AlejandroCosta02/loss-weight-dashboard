@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
-import RootClientLayout from "@/components/RootClientLayout";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-sans",
@@ -30,7 +29,7 @@ export default function RootLayout({
         className={`${plusJakartaSans.variable} ${robotoMono.variable} antialiased bg-background text-foreground`}
       >
         <Providers>
-          <RootClientLayout>{children}</RootClientLayout>
+          {children}
         </Providers>
       </body>
     </html>

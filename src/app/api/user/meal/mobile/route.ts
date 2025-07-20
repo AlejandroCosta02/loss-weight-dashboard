@@ -4,6 +4,21 @@ import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
 
+// Define types for JWT payload
+interface JWTPayload {
+  userId: string;
+  email: string;
+  name: string;
+}
+
+// Define type for meal item
+interface MealItem {
+  nombre: string;
+  cantidad: number;
+  unidad: string;
+  calorias: number;
+}
+
 // Helper function to verify JWT token
 async function verifyToken(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
@@ -13,7 +28,7 @@ async function verifyToken(req: NextRequest) {
 
   const token = authHeader.substring(7);
   try {
-    const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET!) as any;
+    const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET!) as JWTPayload;
     return decoded;
   } catch (error) {
     console.error('Token verification failed:', error);
@@ -89,7 +104,7 @@ export async function POST(req: NextRequest) {
         tipoComida,
         caloriasTotales: Number(caloriasTotales),
         mealItems: {
-          create: mealItems.map((item: any) => ({
+          create: mealItems.map((item: MealItem) => ({
             nombre: item.nombre,
             cantidad: Number(item.cantidad),
             unidad: item.unidad,
